@@ -1,9 +1,9 @@
-@extends('layouts.main')
+@extends('layouts.auth')
 
 @section('title', 'Register')
 
 @section('main')
-    <div class="w-100 h-100 d-flex justify-content-center align-content-center">
+    <div class="w-100 vh-100 d-flex justify-content-center align-content-center">
         <form method="post" action="{{ route('register.action') }}" class="w-25 d-flex justify-content-center flex-column">
             @csrf
             <h3 class="mb-3 fw-normal text-center">Register</h3>
@@ -44,9 +44,12 @@
                 @enderror
             </div>
             <button class="w-100 btn btn-lg btn-light mb-3" type="submit">Register</button>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center mb-3 border-bottom">
                 <p class="me-1 text-secondary fw-light">Already have an account?</p>
                 <a href="{{ route('login.page') }}" class="text-decoration-none text-light fw-semibold">Login</a>
+            </div>
+            <div class="text-center">
+                <a class="me-1 text-light fw-semibold text-decoration-none" href="{{ route('home.page') }}">Go to home page</a>
             </div>
         </form>
     </div>

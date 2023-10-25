@@ -8,15 +8,7 @@
     <title>@yield('title')</title>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
-    @yield('styles')
 <body>
-<header>
-    @include('components.header')
-</header>
-<main>
-    <div class="container-fluid">
-        @yield('main')
-    </div>
-</main>
+    @yield('main')
 </body>
 </html>

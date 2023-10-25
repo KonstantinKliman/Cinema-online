@@ -1,32 +1,43 @@
-<div class="container-fluid">
-    <header
-        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-        <div class="col-md-3 mb-2 mb-md-0">
-            <a href="{{ route('home.page') }}" class="d-inline-flex link-body-emphasis text-decoration-none text-light">
-                Cinema-online
-            </a>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ route('home.page') }}">Cinema-online</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse mt-3 mt-md-0" id="navbarNavDropdown">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ route('home.page') }}">Home</a>
+                    </li>
+                </ul>
+                @if(auth()->check())
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ auth()->user()->name }}
+                        </button>
+                        <ul class="dropdown-menu-end dropdown-menu" >
+                            <li><a class="dropdown-item text-end" href="{{ route('profile.page', ['user_id' => auth()->user()->id]) }}">Your profile</a></li>
+                            <li><a class="dropdown-item text-end" href="{{ route('edit-profile-form.page', ['user_id' => auth()->user()->id]) }}">Edit profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('logout.action') }}" method="post">
+                                    @csrf
+                                    <input type="submit" class="dropdown-item text-end" value="Logout"/>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a href="{{ route('login.page') }}" class="text-decoration-none">
+                        <button type="button" class="btn btn-outline-light me-2">Login</button>
+                    </a>
+                    <a href="{{ route('register.page') }}" class="text-decoration-none">
+                        <button type="button" class="btn btn-light">Register</button>
+                    </a>
+                @endif
+            </div>
         </div>
-        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="{{ route('home.page') }}" class="nav-link text-light px-2">Home</a></li>
-        </ul>
-
-        <div class="col-md-3 text-end d-flex justify-content-end align-items-center">
-            @if(auth()->check())
-                <a href="#" class="text-decoration-none text-light fw-semibold me-2">{{ auth()->user()->name }}</a>
-                <form action="{{ route('logout.action') }}" method="post">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-light p-1 m-0">
-                        Logout
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('login.page') }}" class="text-decoration-none">
-                    <button type="button" class="btn btn-outline-light me-2">Login</button>
-                </a>
-                <a href="{{ route('register.page') }}" class="text-decoration-none">
-                    <button type="button" class="btn btn-light">Register</button>
-                </a>
-            @endif
-        </div>
-    </header>
-</div>
+    </div>
+</nav>

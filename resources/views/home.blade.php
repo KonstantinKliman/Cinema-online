@@ -3,5 +3,7 @@
 @section('title', 'Cinema-online')
 
 @section('main')
-    <h1>Welcome to home page, @if(auth()->check()) {{ auth()->user()->name }} @else guest @endif</h1>
+    <div>
+        Home page, {{ auth()->user()->name }}
+    </div>
 @endsection
