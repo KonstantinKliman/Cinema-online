@@ -35,37 +35,84 @@
                     @enderror
                 </div>
             </form>
-            <form action="{{ route('edit-user-country.action', ['user_id' => $user->id]) }}" method="post">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        </div>
+        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
+            <h5 class="my-3 border-bottom pb-3">Edit your profile information</h5>
+            <form action="{{ route('edit-profile-info.action', ['user_id' => $user->id]) }}" method="post">
                 @csrf
+                <div class="input-group mb-3">
+                    <span class="input-group-text">First name</span>
+                    <input type="text" class="form-control @error('first_name') is-invalid @enderror"
+                           value="{{ old('first_name', $user->profile->first_name) }}" name="first_name">
+                    @error('first_name')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Last name</span>
+                    <input type="text" class="form-control @error('last_name') is-invalid @enderror"
+                           value="{{ old('last_name', $user->profile->last_name) }}" name="last_name">
+                    @error('last_name')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Date of birth</span>
+                    <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror"
+                           value="{{ old('date_of_birth', $user->profile->date_of_birth) }}" name="date_of_birth">
+                    @error('date_of_birth')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">Country</span>
                     <input type="text" class="form-control @error('country') is-invalid @enderror"
-                           value="{{ old('country', $user->country) }}" name="country">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
+                           value="{{ old('country', $user->profile->country) }}" name="country">
                     @error('country')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
                     @enderror
                 </div>
-            </form>
-            <form action="{{ route('edit-user-city.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
                 <div class="input-group mb-3">
                     <span class="input-group-text">City</span>
                     <input type="text" class="form-control @error('city') is-invalid @enderror"
-                           value="{{ old('city', $user->city) }}" name="city">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
+                           value="{{ old('city', $user->profile->city) }}" name="city">
                     @error('city')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
                     @enderror
                 </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Information about yourself</span>
+                    <textarea type="text" class="form-control @error('description') is-invalid @enderror" name="description">{{ old('description', $user->profile->description) }}
+                    </textarea>
+                    @error('description')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="d-flex justify-content-center mb-3">
+                    <button type="submit" class="btn btn-light fw-medium mx-3">Edit profile information</button>
+                </div>
             </form>
-            @if(session('success'))
+            @if(session('profile_success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
+                    {{ session('profile_success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -83,16 +130,16 @@
                 </div>
                 <div class="my-3">
                     <p class="mx-0 my-1">Current photo:</p>
-                    @if($user->profile_photo_path === null)
+                    @if($user->profile->avatar === null)
                         <img src="{{ asset('assets/img/img-profile.png') }}" alt="no-img-profile" class="img-fluid">
                     @else
-                        <img src="{{ asset($user->profile_photo_path) }}" alt="img-profile" class="img-fluid">
+                        <img src="{{ asset($user->profile->avatar) }}" alt="img-profile" class="img-fluid">
                     @endif
                 </div>
-                <div class="input-group inva mb-3">
-                    <input type="file" class="form-control @error('profile_photo') is-invalid @enderror"
-                           id="inputGroupFile02" name="profile_photo">
-                    @error('profile_photo')
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control @error('avatar') is-invalid @enderror"
+                           id="inputGroupFile02" name="avatar">
+                    @error('avatar')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
@@ -141,9 +188,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                @if($errors->default->first('password_error'))
+                @if(session('password_error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ $errors->default->first('password_error') }}
+                        {{ session('password_error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif

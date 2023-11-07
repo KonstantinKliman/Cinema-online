@@ -30,12 +30,14 @@
                         </ul>
                     </div>
                 @else
-                    <a href="{{ route('login.page') }}" class="text-decoration-none">
-                        <button type="button" class="btn btn-outline-light me-2">Login</button>
-                    </a>
-                    <a href="{{ route('register.page') }}" class="text-decoration-none">
-                        <button type="button" class="btn btn-light">Register</button>
-                    </a>
+                    <div class="mt-3 mt-lg-0">
+                        <a href="{{ route('login.page') }}" class="text-decoration-none">
+                            <button type="button" class="btn btn-outline-light me-2">Login</button>
+                        </a>
+                        <a href="{{ route('register.page') }}" class="text-decoration-none">
+                            <button type="button" class="btn btn-light">Register</button>
+                        </a>
+                    </div>
                 @endif
             </div>
         </div>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Application\PagesController;
 use App\Http\Controllers\Application\ProfileController;
+use App\Http\Controllers\Application\MovieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,12 +22,17 @@ Route::controller(PagesController::class)->group(function () {
     Route::get('/profile/{user_id}', 'showProfilePage')->name('profile.page');
 });
 
+Route::controller(MovieController::class)->middleware('auth')->group(function () {
+    Route::get('/movie/create', 'showMovieCreateForm')->name('create-movie-form.page');
+    Route::post('/movie/create', 'createMovie')->name('createMovie.action');
+    Route::get('/movie/{movie_id}', 'showMoviePage')->name('movie.page');
+});
+
 Route::controller(ProfileController::class)->middleware(['auth', 'checkEditProfileAccess'])->group(function () {
     Route::get('/profile/{user_id}/edit', 'showEditProfileForm')->name('edit-profile-form.page');
     Route::post('/profile/{user_id}/edit_user_name', 'editUserName')->name('edit-user-name.action');
     Route::post('/profile/{user_id}/edit_user_email', 'editUserEmail')->name('edit-user-email.action');
-    Route::post('/profile/{user_id}/edit_user_country', 'editUserCountry')->name('edit-user-country.action');
-    Route::post('/profile/{user_id}/edit_user_city', 'editUserCity')->name('edit-user-city.action');
+    Route::post('/profile/{user_id}/edit_profile_info', 'editProfileInfo')->name('edit-profile-info.action');
     Route::post('/profile/{user_id}/upload_photo', 'uploadProfilePhoto')->name('upload-profile-photo.action');
     Route::post('/profile/{user_id}/edit_password', 'editUserPassword')->name('edit-user-password.action');
     Route::post('/profile/{user_id}/delete_account', 'deleteUserAccount')->name('delete-user-account.action');

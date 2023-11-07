@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Services\AuthService;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,6 +17,13 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         //
     ];
+
+    public function register()
+    {
+        $this->app->bind(AuthService::class, function (Application $app) {
+           return new AuthService();
+        });
+    }
 
     /**
      * Register any authentication / authorization services.
