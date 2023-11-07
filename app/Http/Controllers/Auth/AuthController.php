@@ -5,11 +5,21 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Profile;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function showLoginPage()
     {
         return view('login');
@@ -22,14 +32,14 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        User::create($request->validated());
+        $user = $this->authService->register($request);
         return redirect()->route('home.page');
     }
 
     public function login(LoginRequest $request)
     {
         $isRememberMe = (bool)$request->remember_me;
-        if (Auth::attempt($request->validated(), $isRememberMe)) {
+        if ($this->authService->login($request->validated(), $isRememberMe)) {
             return redirect()->route('home.page');
         }
 

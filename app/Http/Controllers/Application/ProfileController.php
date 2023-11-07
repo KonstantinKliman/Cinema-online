@@ -3,79 +3,65 @@
 namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Http\Requests\Application\EditUserPasswordRequest;
-use App\Http\Requests\Application\EditUserNameRequest;
 use App\Http\Requests\Application\EditUserEmailRequest;
-use App\Http\Requests\Application\EditUserCountryRequest;
-use App\Http\Requests\Application\EditUserCityRequest;
+use App\Http\Requests\Application\EditProfileInfoRequest;
 use App\Http\Requests\Application\PhotoProfileRequest;
-use Illuminate\Support\Facades\Hash;
+use App\Services\ProfileService;
 
 class ProfileController extends Controller
 {
+
+    private ProfileService $profileService;
+
+    public function __construct(ProfileService $profileService)
+    {
+        $this->profileService = $profileService;
+    }
+
+    public function showProfilePage($userId)
+    {
+        return view('profile', ['user' => $this->profileService->findUserById($userId)]);
+    }
+
     public function showEditProfileForm($userId)
     {
-        $user = User::find($userId);
-        return view('profile-edit-form', ['user' => $user]);
+        return view('profile-edit-form', ['user' => $this->profileService->findUserById($userId)]);
     }
 
     public function editUserName(EditUserNameRequest $request, $userId)
     {
-        $user = User::find($userId);
-        $user->name = $request->name;
-        $user->save();
+        $this->profileService->editUserName($request, $userId);
         return redirect()->back()->with('success', 'Name changed successfully');
     }
 
     public function editUserEmail(EditUserEmailRequest $request, $userId)
     {
-        $user = User::find($userId);
-        $user->email = $request->email;
-        $user->save();
-        return redirect()->back()->with('success', 'Email changed successfully');
+        $this->profileService->editUserEmail($request, $userId);
+        return redirect()->back()->with('success', 'Profile information changed successfully');
     }
 
-    public function editUserCountry(EditUserCountryRequest $request, $userId)
+    public function editProfileInfo(EditProfileInfoRequest $request, $userId)
     {
-        $user = User::find($userId);
-        $user->country = $request->country;
-        $user->save();
-        return redirect()->back()->with('success', 'Country changed successfully');
-    }
-
-    public function editUserCity(EditUserCityRequest $request, $userId)
-    {
-        $user = User::find($userId);
-        $user->city = $request->city;
-        $user->save();
-        return redirect()->back()->with('success', 'City changed successfully');
+        $this->profileService->editProfileInfo($request, $userId);
+        return redirect()->back()->with('profile_success', 'Profile information changed successfully');
     }
 
     public function uploadProfilePhoto(PhotoProfileRequest $request, $userId)
     {
-        User::where('id', $userId)->update(['profile_photo_path' => 'storage/' . $request->file('profile_photo')->store('profile/photo')]);
+        $this->profileService->editUserAvatar($request, $userId);
         return redirect()->back()->with('photo_success', 'Profile photo changed successfully');
     }
 
     public function editUserPassword(EditUserPasswordRequest $request, $userId)
     {
-        $user = User::find($userId);
-
-        if (Hash::check($request->validated()['password'], $user->password)) {
-            return redirect()->back()->withErrors(['password_error' => 'The password is the same as the current one.']);
-        }
-
-        $user->password = Hash::make($request->validated()['password']);
-        $user->save();
-
-        return redirect()->back()->with('password_success', 'Password changed successfully');
+        $message = $this->profileService->editUserPassword($request, $userId);
+        return redirect()->back()->with($message);
     }
 
     public function deleteUserAccount($userId)
     {
-        $user = User::find($userId);
-        $user->delete();
-        return redirect()->route('home.page');
+        $message = $this->profileService->deleteUserAccount($userId);
+        return redirect()->route('home.page')->with($message);
     }
 }

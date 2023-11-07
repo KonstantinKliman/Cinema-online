@@ -8,24 +8,24 @@
             <h1 class="text-center">
                 {{ $user->name }} profile page
             </h1>
-            @if(auth()->user()->id === $user->id)
-
-            @endif
         </div>
     </div>
     <div class="row my-3">
         <div class="col-2">
-            @if($user->profile_photo_path === null)
+            @if($user->profile->avatar === null)
                 <img src="{{ asset('assets/img/img-profile.png') }}" alt="no-img-profile" class="img-fluid rounded-circle">
             @else
-                <img src="{{ asset($user->profile_photo_path) }}" alt="img-profile" class="img-fluid rounded-circle">
+                <img src="{{ asset($user->profile->avatar) }}" alt="img-profile" class="img-fluid rounded-circle">
             @endif
         </div>
         <div class="col-10 text-start">
-            <p><strong>Name:</strong> {{ $user->name }}</p>
+            <p><strong>Username:</strong> {{ $user->name }}</p>
+            <p><strong>First name:</strong> {{ $user->profile->first_name }}</p>
+            <p><strong>Last name:</strong> {{ $user->profile->last_name }}</p>
             <p><strong>Email:</strong> {{ $user->email }}</p>
-            <p><strong>Country:</strong> {{ $user->country }}</p>
-            <p><strong>City:</strong> {{ $user->city }}</p>
+            <p><strong>Country:</strong> {{ $user->profile->country }}</p>
+            <p><strong>City:</strong> {{ $user->profile->city }}</p>
+            <p><strong>Information about yourself:</strong> {{ $user->profile->description }}</p>
         </div>
     </div>
 @endsection
