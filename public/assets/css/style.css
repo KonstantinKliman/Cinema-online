@@ -1,0 +1,42 @@
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img {
+    transition: filter 1s ease-in-out;
+}
+
+.card:hover .card-img {
+    filter: brightness(70%);
+}
+
+.card-img-overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.card:hover .card-img-overlay {
+    opacity: 1;
+}
+
+.card-info {
+    flex-grow: 1;
+}
+
+.btn-watch-now {
+    margin-top: 1rem;
+}
+
+.link {
+    opacity: 50%;
+    transition: opacity 0.3s ease-in-out;
+    text-decoration: none;
+    color: white;
+}
+
+.link:hover {
+    opacity: 100%;
+}

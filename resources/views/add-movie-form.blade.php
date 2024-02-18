@@ -5,12 +5,13 @@
 @section('main')
     <h1 class="text-center my-3">Upload a movie</h1>
     <div class="d-flex flex-column align-items-center">
-        <div class="border bg-light-subtle rounded-3 p-3 w-50">
+        <x-container class="w-50">
             <form action="{{ route('createMovie.action') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="inputGroup-sizing-default">Title</span>
-                    <input type="text" class="form-control @error('title') is-invalid @enderror" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="title">
+                    <input type="text" class="form-control @error('title') is-invalid @enderror"
+                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="title">
                     @error('title')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -18,35 +19,63 @@
                     @enderror
                 </div>
                 <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Country</span>
+                    <input type="text" class="form-control @error('country') is-invalid @enderror"
+                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="country">
+                    @error('country')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Production studio</span>
+                    <input type="text" class="form-control @error('production_studio') is-invalid @enderror"
+                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="production_studio">
+                    @error('production_studio')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Year</span>
+                    <input type="number" min="1895" max="{{ now()->year }}" class="form-control @error('release_year') is-invalid @enderror"
+                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="release_year">
+                    @error('release_year')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <div class="input-group mb-3">
                     <span class="input-group-text">Description</span>
-                    <textarea class="form-control @error('description') is-invalid @enderror" aria-label="With textarea" name="description"></textarea>
+                    <textarea class="form-control @error('description') is-invalid @enderror" aria-label="With textarea"
+                              name="description"></textarea>
                     @error('description')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
                     @enderror
                 </div>
-{{--                <div class="accordion mb-3" id="accordionExample">--}}
-{{--                    <div class="accordion-item">--}}
-{{--                        <h2 class="accordion-header">--}}
-{{--                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">--}}
-{{--                                Choose movie genre--}}
-{{--                            </button>--}}
-{{--                        </h2>--}}
-{{--                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">--}}
-{{--                            <div class="accordion-body">--}}
-{{--                                <select class="form-select" multiple aria-label="multiple select example" name="genres[]">--}}
-{{--                                    @foreach($genres as $genre)--}}
-{{--                                        <option value="{{ $genre->id }}">{{ $genre->title }}</option>--}}
-{{--                                    @endforeach--}}
-{{--                                </select>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Genre</span>
+                    <select class="form-control" multiple="" aria-label="Multiple select example" size="5"
+                            name="genres[]">
+                        @foreach($genres as $genre)
+                            <option value="{{ $genre->id }}">{{ $genre->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('genres[]')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupFile01">Movie file</label>
-                    <input type="file" class="form-control @error('movie_file_path') is-invalid @enderror" id="inputGroupFile01" name="movie_file_path">
+                    <input type="file" class="form-control @error('movie_file_path') is-invalid @enderror"
+                           id="inputGroupFile01" name="movie_file_path">
                     @error('movie_file_path')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -55,7 +84,8 @@
                 </div>
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupFile01">Movie poster</label>
-                    <input type="file" class="form-control @error('poster_file_path') is-invalid @enderror" id="inputGroupFile01" name="poster_file_path">
+                    <input type="file" class="form-control @error('poster_file_path') is-invalid @enderror"
+                           id="inputGroupFile01" name="poster_file_path">
                     @error('poster_file_path')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -78,6 +108,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-        </div>
+        </x-container>
     </div>
 @endsection

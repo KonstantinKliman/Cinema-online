@@ -5,51 +5,15 @@
 @section('main')
     <h1 class="text-center my-3">Edit your profile</h1>
     <div class="d-flex flex-column align-items-center">
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
-            <h5 class="my-3 border-bottom pb-3">Edit your account information</h5>
-            <form action="{{ route('edit-user-name.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                           value="{{ old('name', $user->name) }}" name="name">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('name')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-            </form>
-            <form action="{{ route('edit-user-email.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Email <span class="text-danger fw-bold">*</span></span>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                           value="{{ old('email', $user->email) }}" name="email">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('email')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-            </form>
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-        </div>
+        {{--Edit profile information--}}
         <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
             <h5 class="my-3 border-bottom pb-3">Edit your profile information</h5>
-            <form action="{{ route('edit-profile-info.action', ['user_id' => $user->id]) }}" method="post">
+            <form action="{{ route('edit-profile-info.action', ['user_id' => $profile->user->id]) }}" method="post">
                 @csrf
                 <div class="input-group mb-3">
                     <span class="input-group-text">First name</span>
                     <input type="text" class="form-control @error('first_name') is-invalid @enderror"
-                           value="{{ old('first_name', $user->profile->first_name) }}" name="first_name">
+                           value="{{ old('first_name', $profile->first_name) }}" name="first_name" placeholder="Enter your first name here">
                     @error('first_name')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -59,7 +23,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Last name</span>
                     <input type="text" class="form-control @error('last_name') is-invalid @enderror"
-                           value="{{ old('last_name', $user->profile->last_name) }}" name="last_name">
+                           value="{{ old('last_name', $profile->last_name) }}" name="last_name" placeholder="Enter your last name here">
                     @error('last_name')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -69,7 +33,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Date of birth</span>
                     <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror"
-                           value="{{ old('date_of_birth', $user->profile->date_of_birth) }}" name="date_of_birth">
+                           value="{{ old('date_of_birth', $profile->date_of_birth) }}" name="date_of_birth" placeholder="Enter your date of birth here">
                     @error('date_of_birth')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -79,7 +43,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Country</span>
                     <input type="text" class="form-control @error('country') is-invalid @enderror"
-                           value="{{ old('country', $user->profile->country) }}" name="country">
+                           value="{{ old('country', $profile->country) }}" name="country" placeholder="Enter your country here">
                     @error('country')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -89,7 +53,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">City</span>
                     <input type="text" class="form-control @error('city') is-invalid @enderror"
-                           value="{{ old('city', $user->profile->city) }}" name="city">
+                           value="{{ old('city', $profile->city) }}" name="city" placeholder="Enter your city here">
                     @error('city')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -98,8 +62,8 @@
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">Information about yourself</span>
-                    <textarea type="text" class="form-control @error('description') is-invalid @enderror" name="description">{{ old('description', $user->profile->description) }}
-                    </textarea>
+                    <textarea type="text" class="form-control @error('description') is-invalid @enderror"
+                              name="description" placeholder="Enter your information about yourself here">{{ old('description', $profile->description) }}</textarea>
                     @error('description')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -117,8 +81,9 @@
                 </div>
             @endif
         </div>
+        {{--Edit profile photo--}}
         <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
-            <form action="{{ route('upload-profile-photo.action', ['user_id' => $user->id]) }}" method="post"
+            <form action="{{ route('upload-profile-photo.action', ['user_id' => $profile->user->id]) }}" method="post"
                   enctype="multipart/form-data">
                 @csrf
                 <div class="border-bottom">
@@ -130,10 +95,10 @@
                 </div>
                 <div class="my-3">
                     <p class="mx-0 my-1">Current photo:</p>
-                    @if($user->profile->avatar === null)
+                    @if($profile->avatar === null)
                         <img src="{{ asset('assets/img/img-profile.png') }}" alt="no-img-profile" class="img-fluid">
                     @else
-                        <img src="{{ asset($user->profile->avatar) }}" alt="img-profile" class="img-fluid">
+                        <img src="{{ asset($profile->avatar) }}" alt="img-profile" class="img-fluid">
                     @endif
                 </div>
                 <div class="input-group mb-3">
@@ -148,63 +113,13 @@
                 <div class="d-flex justify-content-center mb-3">
                     <button type="submit" class="btn btn-light fw-medium mx-3">Edit profile photo</button>
                 </div>
-                @if(session('photo_success'))
+                @if(session('photo_message'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('photo_success') }}
+                        {{ session('photo_message') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-            </form>
-        </div>
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
-            <form action="{{ route('edit-user-password.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <h5 class="my-3 border-bottom pb-3">Edit your password</h5>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Password<span class="text-danger fw-bold">*</span></span>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" name="password">
-                    @error('password')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Confirm password<span class="text-danger fw-bold">*</span></span>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror"
-                           name="password_confirmation">
-                    @error('password')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-                <div class="d-flex justify-content-center mb-3">
-                    <button type="submit" class="btn btn-light fw-medium">Edit password</button>
-                </div>
-                @if(session('password_success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('password_success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                @if(session('password_error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('password_error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-            </form>
-        </div>
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
-            <form action="{{ route('delete-user-account.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <h5 class="my-3 border-bottom pb-3 text-danger-emphasis">Delete your account</h5>
-                <div class="d-flex justify-content-center mb-3">
-                    <button type="submit" class="btn btn-danger fw-bold">Delete account</button>
-                </div>
             </form>
         </div>
     </div>
 @endsection
-{{--ViewSonic9997--}}

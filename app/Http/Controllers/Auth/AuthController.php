@@ -5,51 +5,67 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\Profile;
-use App\Models\User;
-use App\Services\AuthService;
-use Illuminate\Support\Facades\Auth;
+use App\Services\Interfaces\AuthServiceInterface;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AuthController extends Controller
 {
 
-    protected $authService;
+    private AuthServiceInterface $authService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthServiceInterface $authService)
     {
         $this->authService = $authService;
     }
 
-    public function showLoginPage()
+    public function showLoginPage(): View
     {
-        return view('login');
+        return view('auth.login');
     }
 
-    public function showRegisterPage()
+    public function showRegisterPage(): View
     {
-        return view('register');
+        return view('auth.register');
     }
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request): RedirectResponse
     {
-        $user = $this->authService->register($request);
+        $this->authService->register($request);
         return redirect()->route('home.page');
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): RedirectResponse
     {
         $isRememberMe = (bool)$request->remember_me;
         if ($this->authService->login($request->validated(), $isRememberMe)) {
             return redirect()->route('home.page');
         }
-
         return redirect()->back()->withErrors(['auth_error' => 'Incorrect credentials']);
     }
 
-    public function logout()
+    public function logout(): RedirectResponse
     {
-        Auth::logout();
-
+        $this->authService->logout();
         return redirect()->route('home.page');
+    }
+
+    public function verifyEmailPage(): View
+    {
+        return view('auth.verify-email');
+    }
+
+    public function verifyEmail(EmailVerificationRequest $request): RedirectResponse
+    {
+        $this->authService->verifyEmail($request);
+        return redirect()->route('home.page');
+    }
+
+    public function resendVerificationLink(Request $request): RedirectResponse
+    {
+        $this->authService->resendVerificationLink($request);
+        return back()->with('message', 'Verification link sent!');
     }
 }

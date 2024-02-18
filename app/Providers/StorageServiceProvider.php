@@ -2,19 +2,18 @@
 
 namespace App\Providers;
 
-use App\Services\ProfileService;
+use App\Services\Interfaces\StorageServiceInterface;
+use App\Services\StorageService;
 use Illuminate\Support\ServiceProvider;
 
-class ProfileServiceProvider extends ServiceProvider
+class StorageServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
      */
     public function register(): void
     {
-        $this->app->bind(ProfileService::class, function () {
-            return new ProfileService();
-        });
+        $this->app->bind(StorageServiceInterface::class, StorageService::class);
     }
 
     /**

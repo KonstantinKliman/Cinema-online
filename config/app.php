@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Cinema-online'),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,8 +168,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\ProfileServiceProvider::class,
-        App\Providers\MovieServiceProvider::class,
+        App\Providers\RepositoryProvider::class,
+        App\Providers\StorageServiceProvider::class,
     ])->toArray(),
 
     /*

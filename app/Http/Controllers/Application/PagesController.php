@@ -3,13 +3,27 @@
 namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\ProfileService;
+use App\Services\Interfaces\GenreServiceInterface;
+use App\Services\Interfaces\MovieServiceInterface;
+use Illuminate\View\View;
 
 class PagesController extends Controller
 {
-    public function showHomePage()
+
+    private MovieServiceInterface $movieService;
+    private GenreServiceInterface $genreService;
+
+    public function __construct(MovieServiceInterface $movieService, GenreServiceInterface $genreService)
     {
-        return view('home');
+        $this->movieService = $movieService;
+        $this->genreService = $genreService;
+    }
+
+    public function showHomePage(): View
+    {
+        return view('home', [
+            'movies' => $this->movieService->paginate(10),
+            'genres' => $this->genreService->getAllGenres(),
+        ]);
     }
 }

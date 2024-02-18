@@ -9,7 +9,7 @@
             <h3 class="mb-3 fw-normal text-center">Login</h3>
             <div class="form-floating mb-3">
                 <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="floatingInput" placeholder="name@example.com" value="{{ old('email') }}">
-                <label for="floatingInput">Email address</label>
+                <label for="floatingInput">{{__('Email address')}}</label>
                 @error('email')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -18,7 +18,7 @@
             </div>
             <div class="form-floating mb-3">
                 <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="floatingPassword" placeholder="Password" value="{{ old('password') }}">
-                <label for="floatingPassword">Password</label>
+                <label for="floatingPassword">{{__('Password')}}</label>
                 @error('password')
                 <div class="invalid-feedback">
                     {{ $message }}
