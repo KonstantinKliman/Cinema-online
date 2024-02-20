@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Http\Requests\Application\CreateMovieRequest;
 use App\Http\Requests\Application\EditMovieRequest;
-use App\Http\Requests\Application\SortMovieRequest;
 use App\Models\Movie;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Services\Interfaces\GenreServiceInterface;
@@ -23,6 +22,9 @@ class MovieService implements MovieServiceInterface
     private PersonServiceInterface $personService;
     private StorageServiceInterface $storageService;
 
+    private const STORAGE_PATH = 'storage/';
+    private const MOVIE_PATH = 'movies/';
+
     public function __construct(MovieRepositoryInterface $movieRepository, GenreServiceInterface $genreService, PersonServiceInterface $personService, StorageServiceInterface $storageService)
     {
         $this->movieRepository = $movieRepository;
@@ -31,27 +33,23 @@ class MovieService implements MovieServiceInterface
         $this->storageService = $storageService;
     }
 
-    private function isMovieExists(string $requestMovieTitle): bool
-    {
-        return $this->movieRepository->getByTitle($requestMovieTitle) !== null;
-    }
-
     public function createMovie(CreateMovieRequest $request): array
     {
         if (!$this->isMovieExists($request->validated('title'))) {
-            $data = [
+            $movie = $this->movieRepository->create([
                 'user_id' => $request->user()->id,
                 'title' => $request->validated('title'),
                 'country' => $request->validated('country'),
                 'production_studio' => $request->validated('production_studio'),
                 'release_year' => $request->validated('release_year'),
                 'description' => $request->validated('description'),
-                'movie_file_path' => 'storage/' . $request->file('movie_file_path')->store('movies/' . $request->validated('title')),
-                'poster_file_path' => 'storage/' . $request->file('poster_file_path')->store('movies/' . $request->validated('title')),
-            ];
-
+                'movie_file_path' => null,
+                'poster_file_path' => null,
+            ]);
+            $movie->movie_file_path = self::STORAGE_PATH . $request->file('movie_file_path')->store(self::MOVIE_PATH . $movie->id);
+            $movie->poster_file_path = self::STORAGE_PATH . $request->file('poster_file_path')->store(self::MOVIE_PATH . $movie->id);
+            $this->movieRepository->save($movie);
             $genres = $request->validated('genres');
-            $movie = $this->movieRepository->create($data);
             $this->genreService->createGenreForMovie($movie, $genres);
 
             return ['create_movie_success' => 'Movie "' . $movie->title . '" uploaded.'];
@@ -111,60 +109,38 @@ class MovieService implements MovieServiceInterface
     public function edit(int $movieId, EditMovieRequest $request): Movie
     {
         $movie = $this->movieRepository->getById($movieId);
-
-        $oldMovieTitle = $movie->title;
-        $oldMovieFilePath = str_replace('storage/', '', $movie->movie_file_path);
-        $oldPosterFilePath = str_replace('storage/', '', $movie->poster_file_path);
-
-        $this->movieRepository->update($movie, $request->validated());
-        // Если у фильма изменился только title
-        if ($movie->wasChanged('title') && !$request->hasFile('movie_file_path') && !$request->hasFile('poster_file_path')) {
-            $oldMovieDirectory = 'movies/' . $oldMovieTitle;
-            $movie->poster_file_path = str_replace($oldMovieTitle, $movie->title, $movie->poster_file_path);
-            $movie->movie_file_path = str_replace($oldMovieTitle, $movie->title, $movie->movie_file_path);
-            $this->storageService->move($oldMovieFilePath, str_replace('storage/', '', $movie->movie_file_path));
-            $this->storageService->move($oldPosterFilePath, str_replace('storage/', '', $movie->poster_file_path));
-            $this->storageService->deleteDirectory($oldMovieDirectory);
-            $this->movieRepository->save($movie);
-        }
-        // Если у фильма изменился title и был загружен новый файл с фильмом
-        if ($movie->wasChanged('title') && $request->hasFile('movie_file_path') && !$request->hasFile('poster_file_path')) {
+        $this->movieRepository->update($movie, [
+            'title' => $request->validated('title'),
+            'country' => $request->validated('country'),
+            'production_studio' => $request->validated('production_studio'),
+            'release_year' => $request->validated('release_year'),
+            'description' => $request->validated('description'),
+        ]);
+        $oldMovieFilePath = str_replace(self::STORAGE_PATH, '', $movie->movie_file_path);
+        $oldPosterFilePath = str_replace(self::STORAGE_PATH, '', $movie->poster_file_path);
+        // Если измеился файл фильма
+        if ($request->hasFile('movie_file_path') && !$request->hasFile('poster_file_path')) {
             $this->storageService->delete($oldMovieFilePath);
-            $oldMovieDirectory = 'movies/' . $oldMovieTitle;
-            $newMovieFilePath = 'storage/' . $request->file('movie_file_path')->store('movies/' . $request->validated('title'));
-            $newPosterFilePath = str_replace($oldMovieTitle, $movie->title, $movie->poster_file_path);
+            $newMovieFilePath = self::STORAGE_PATH . $request->file('movie_file_path')->store(self::MOVIE_PATH . $movie->id);
             $movie->movie_file_path = $newMovieFilePath;
-            $movie->poster_file_path = $newPosterFilePath;
-            $this->storageService->move($oldPosterFilePath, str_replace('storage/', '', $newPosterFilePath));
-            $this->storageService->deleteDirectory($oldMovieDirectory);
             $this->movieRepository->save($movie);
         }
-        // Если у фильма изменился title и был загружен новый файл с постером
-        if ($movie->wasChanged('title') && !$request->hasFile('movie_file_path') && $request->hasFile('poster_file_path')) {
+        // Если измеился файл постера
+        if (!$request->hasFile('movie_file_path') && $request->hasFile('poster_file_path')) {
             $this->storageService->delete($oldPosterFilePath);
-            $oldMovieDirectory = 'movies/' . $oldMovieTitle;
-            $newPosterFilePath = 'storage/' . $request->file('poster_file_path')->store('movies/' . $request->validated('title'));
-            $newMovieFilePath = str_replace($oldMovieTitle, $movie->title, $movie->movie_file_path);
-            $movie->movie_file_path = $newMovieFilePath;
+            $newPosterFilePath = self::STORAGE_PATH . $request->file('poster_file_path')->store(self::MOVIE_PATH . $movie->id);
             $movie->poster_file_path = $newPosterFilePath;
-            $this->storageService->move($oldMovieFilePath, str_replace('storage/', '', $newMovieFilePath));
-            $this->storageService->deleteDirectory($oldMovieDirectory);
             $this->movieRepository->save($movie);
         }
-        // Если у фильма изменился title и был загружен новый файл с фильмом и новый файл с постером
-        if ($movie->wasChanged('title') && $request->hasFile('poster_file_path') && $request->hasFile('movie_file_path')) {
-            $oldMovieDirectory = 'movies/' . $oldMovieTitle;
-            $newMovieFilePath = 'storage/' . $request->file('movie_file_path')->store('movies/' . $request->validated('title'));
-            $newPosterFilePath = 'storage/' . $request->file('poster_file_path')->store('movies/' . $request->validated('title'));
-            $movie->movie_file_path = $newMovieFilePath;
-            $movie->poster_file_path = $newPosterFilePath;
+        // Если измеился файл фильма и файл постера
+        if ($request->hasFile('movie_file_path') && $request->hasFile('poster_file_path')) {
             $this->storageService->delete([$oldMovieFilePath, $oldPosterFilePath]);
-            if ($request->validated('title') !== $movie->title) {
-                $this->storageService->deleteDirectory($oldMovieDirectory);
-            }
+            $newMovieFilePath = self::STORAGE_PATH . $request->file('movie_file_path')->store(self::MOVIE_PATH . $movie->id);
+            $newPosterFilePath = self::STORAGE_PATH . $request->file('poster_file_path')->store(self::MOVIE_PATH . $movie->id);
+            $movie->movie_file_path = $newMovieFilePath;
+            $movie->poster_file_path = $newPosterFilePath;
             $this->movieRepository->save($movie);
         }
-
         $this->movieRepository->syncGenres($movie, $request->validated('genres'));
 
         return $movie;

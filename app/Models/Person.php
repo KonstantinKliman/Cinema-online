@@ -21,5 +21,4 @@ class Person extends Model
     {
         return $this->belongsToMany(Movie::class)->withPivot('role');
     }
-
 }
