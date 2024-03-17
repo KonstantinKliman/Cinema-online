@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Comment;
+use App\Models\Review;
 use App\Models\Movie;
 use App\Models\Profile;
 use App\Models\User;

@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\CreatePersonRequest;
+use App\Models\Person;
 use App\Services\Interfaces\MovieServiceInterface;
 use App\Services\Interfaces\PersonServiceInterface;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class PersonController extends Controller
 {
@@ -21,22 +24,21 @@ class PersonController extends Controller
 
     public function showPersonCreateForm()
     {
-        return view('add-person-form', ['movies' => $this->movieService->all()]);
+        return view('person.add', ['movies' => $this->movieService->all()]);
     }
 
-    public function showPersonPage($personUrl)
+    public function showPersonPage(Person $person): View
     {
-        $person = $this->personService->getPersonByUrl($personUrl);
         $roles = $this->personService->getPersonRoles($person);
         $movies = $this->personService->getPersonMovies($person);
-        return view('person', [
+        return view('person.main', [
             'person' => $person,
             'roles' => $roles,
             'movies' => $movies,
         ]);
     }
 
-    public function create(CreatePersonRequest $request)
+    public function create(CreatePersonRequest $request): RedirectResponse
     {
         $this->personService->create($request);
         return redirect()->back();

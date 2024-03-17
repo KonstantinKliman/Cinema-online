@@ -11,18 +11,33 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GenreRepository implements GenreRepositoryInterface
 {
-    public function create(Movie $movie, array $genres)
+    public function attach(Movie $movie, array $genres)
     {
         return $movie->genres()->attach($genres);
-    }
-
-    public function findByGenreName(string $genreName)
-    {
-        return Genre::where('name', $genreName)->first();
     }
 
     public function all(): Collection
     {
         return Genre::all();
+    }
+
+    public function detach(Movie $movie, int $genreId)
+    {
+        return $movie->genres()->detach($genreId);
+    }
+
+    public function create(array $data)
+    {
+        return Genre::firstOrCreate($data);
+    }
+
+    public function update(array $data, Genre $genre)
+    {
+        $genre->update($data);
+    }
+
+    public function delete(Genre $genre): void
+    {
+        $genre->delete();
     }
 }

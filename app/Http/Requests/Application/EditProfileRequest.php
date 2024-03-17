@@ -11,10 +11,10 @@ class EditProfileRequest extends FormRequest
         return [
             'first_name' => ['string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
             'last_name' => ['string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
-            'date_of_birth' => ['date'],
-            'country' => ['string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
-            'city' => ['string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
-            'description' => ['string'],
+            'date_of_birth' => ['nullable', 'date'],
+            'country' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
+            'city' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
+            'description' => ['nullable', 'string'],
         ];
     }
 }

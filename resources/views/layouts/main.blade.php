@@ -8,17 +8,18 @@
     <title>@yield('title')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
-    @stack('styles')
+@stack('styles')
 <body>
     @php
         $genres = \App\Models\Genre::all();
     @endphp
-        <div class="d-flex flex-column min-vh-100">
+    <div class="d-flex flex-column vh-100">
         <header>
             @include('includes.header', ['genres' => $genres])
         </header>
-        <main>
+        <main class="flex-grow-1">
             <div class="container-fluid">
                 @yield('main')
             </div>
@@ -27,6 +28,6 @@
             @include('includes.footer')
         </footer>
     </div>
-    @stack('js')
+@stack('js')
 </body>
 </html>

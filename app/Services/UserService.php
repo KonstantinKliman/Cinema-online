@@ -2,12 +2,17 @@
 
 namespace App\Services;
 
+use App\Enums\RoleType;
+use App\Http\Requests\Admin\EditUserRoleRequest;
 use App\Http\Requests\Application\EditUserEmailRequest;
 use App\Http\Requests\Application\EditUserNameRequest;
 use App\Http\Requests\Application\EditUserPasswordRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\ProfileServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,15 +20,21 @@ class UserService implements UserServiceInterface
 {
 
     private UserRepositoryInterface $userRepository;
+    private ProfileServiceInterface $profileService;
 
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository, ProfileServiceInterface $profileService)
     {
         $this->userRepository = $userRepository;
+        $this->profileService = $profileService;
     }
 
     public function create(array $data)
     {
-        return $this->userRepository->create($data);
+        $user = $this->userRepository->create($data);
+        if ((int)$user->role == RoleType::user->value) {
+            $this->profileService->create($user->id);
+        }
+        return $user;
     }
 
     public function editUserName(EditUserNameRequest $request, int $userId): User
@@ -42,7 +53,7 @@ class UserService implements UserServiceInterface
         return $user;
     }
 
-    public function editUserPassword(EditUserPasswordRequest $request, int $userId) : array
+    public function editUserPassword(EditUserPasswordRequest $request, int $userId): array
     {
         $user = $this->userRepository->getByUserId($userId);
         $message = [];
@@ -57,14 +68,49 @@ class UserService implements UserServiceInterface
         return $message = ['password_success' => 'Password changed successfully.'];
     }
 
-    public function deleteUser(int $userId): string
+    public function deleteUser(int $userId): void
     {
         $user = $this->userRepository->getByUserId($userId);
-        if ($user->profile->hasAvatar()) {
-            Storage::delete(str_replace('storage/', '', $user->profile->avatar));
+        if ($user->profile) {
+            if ($user->profile->hasAvatar()) {
+                Storage::delete(str_replace('storage/', '', $user->profile->avatar));
+            }
         }
         $this->userRepository->delete($userId);
-        $message = 'Account deleted successfully.';
-        return $message;
+    }
+
+    public function getAllUsers(): Collection
+    {
+        return $this->userRepository->all();
+    }
+
+    public function getUser(int $userId): User
+    {
+        return $this->userRepository->getByUserId($userId);
+    }
+
+    public function getAllRoles(): array
+    {
+        return $this->userRepository->getAllRoles();
+    }
+
+    public function editUserRole(EditUserRoleRequest $request, $userId)
+    {
+        $currentRole = (int)$this->userRepository->getByUserId($userId)->role;
+        $newRole = (int)$request->validated('role');
+        $this->userRepository->editUserRole($userId, $request->validated('role'));
+        if ($newRole === RoleType::user->value) {
+            $this->profileService->deleteByUserId($userId);
+            $user = $this->userRepository->getByUserId($userId);
+            $user->email_verified_at = null;
+            $user->save();
+        } elseif ($currentRole === RoleType::user->value) {
+            $this->profileService->create($userId);
+        }
+        if ($newRole !== RoleType::user->value) {
+            $user = $this->userRepository->getByUserId($userId);
+            $user->email_verified_at = date('Y-m-d H:i:s');
+            $user->save();
+        }
     }
 }

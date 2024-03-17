@@ -3,20 +3,22 @@
 namespace App\Providers;
 
 use App\Services\Interfaces\AuthServiceInterface;
-use App\Services\Interfaces\CommentServiceInterface;
+use App\Services\Interfaces\PersonRoleServiceInterface;
+use App\Services\Interfaces\ReviewServiceInterface;
 use App\Services\Interfaces\GenreServiceInterface;
 use App\Services\Interfaces\MovieServiceInterface;
 use App\Services\Interfaces\PersonServiceInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
-use App\Services\Interfaces\RatingsServiceInterface;
+use App\Services\Interfaces\RatingServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use App\Services\AuthService;
 use App\Services\GenreService;
-use App\Services\CommentService;
+use App\Services\PersonRoleService;
+use App\Services\ReviewService;
 use App\Services\MovieService;
 use App\Services\PersonService;
 use App\Services\ProfileService;
-use App\Services\RatingsService;
+use App\Services\RatingService;
 use App\Services\UserService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -31,12 +33,13 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(MovieServiceInterface::class,MovieService::class);
         $this->app->bind(ProfileServiceInterface::class,ProfileService::class);
-        $this->app->bind(CommentServiceInterface::class,CommentService::class);
-        $this->app->bind(RatingsServiceInterface::class,RatingsService::class);
+        $this->app->bind(ReviewServiceInterface::class,ReviewService::class);
+        $this->app->bind(RatingServiceInterface::class,RatingService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(GenreServiceInterface::class, GenreService::class);
         $this->app->bind(AuthServiceInterface::class, AuthService::class);
         $this->app->bind(PersonServiceInterface::class, PersonService::class);
+        $this->app->bind(PersonRoleServiceInterface::class, PersonRoleService::class);
     }
 
     /**

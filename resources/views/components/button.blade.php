@@ -1,5 +1,5 @@
 <button {{ $attributes->merge([
-    'type' => 'button'
+    'type' => 'button',
 ]) }} class="btn btn-outline-light">
     {{ $slot }}
 </button>

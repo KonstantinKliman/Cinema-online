@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\RoleType;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -45,6 +48,18 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
+    public static function getRoles()
+    {
+        return [
+            RoleType::administrator->value => 'Administrator',
+            RoleType::uploader->value => 'Uploader',
+            RoleType::moderator->value => 'Moderator',
+            RoleType::subscriber->value => 'Subscriber',
+            RoleType::verified->value => 'Verified',
+            RoleType::user->value => 'User',
+        ];
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
@@ -55,13 +70,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Movie::class);
     }
 
-    public function comments(): HasMany
+    public function reviews(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Review::class);
     }
 
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function roles(): hasMany
+    {
+        return $this->hasMany(Role::class);
     }
 }

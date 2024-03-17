@@ -3,6 +3,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\RoleType;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
@@ -42,5 +43,15 @@ class UserRepository implements UserRepositoryInterface
     public function editUserEmail(User $user, string $email): string
     {
         return $user->email = $email;
+    }
+
+    public function getAllRoles(): array
+    {
+        return User::getRoles();
+    }
+
+    public function editUserRole(int $userId, string $role): bool
+    {
+        return User::where(['id' => $userId])->update(['role' => $role]);
     }
 }

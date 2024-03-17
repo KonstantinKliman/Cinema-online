@@ -3,11 +3,12 @@
 
 namespace App\Services;
 
+use App\Enums\RoleType;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\Profile;
 use App\Models\User;
 use App\Services\Interfaces\AuthServiceInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
+use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
@@ -34,27 +35,26 @@ class AuthService implements AuthServiceInterface
             'email' => $request->validated('email'),
             'password' => $request->validated('password'),
         ], false);
-        $this->profileService->create($user->id);
         return $user;
     }
 
-    public function login(array $credentials, bool $isRememberMe = false)
+    public function login(array $credentials, bool $isRememberMe = false): bool
     {
         return Auth::attempt($credentials, $isRememberMe);
     }
 
-    public function logout()
+    public function logout(): void
     {
         Auth::logout();
     }
 
-    public function verifyEmail(EmailVerificationRequest $request)
+    public function verifyEmail(EmailVerificationRequest $request): void
     {
         $request->fulfill();
         $this->profileService->create($request->user()->id);
     }
 
-    public function resendVerificationLink(Request $request)
+    public function resendVerificationLink(Request $request): void
     {
         $request->user()->sendEmailVerificationNotification();
     }

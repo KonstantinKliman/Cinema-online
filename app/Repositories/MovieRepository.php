@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Models\Movie;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 class MovieRepository implements MovieRepositoryInterface
 {
@@ -45,7 +46,7 @@ class MovieRepository implements MovieRepositoryInterface
         return Movie::all();
     }
 
-    public function attachGenres(Movie $movie, array $genres):void
+    public function attachGenres(Movie $movie, array $genres): void
     {
         $movie->genres()->attach($genres);
     }
@@ -83,5 +84,10 @@ class MovieRepository implements MovieRepositoryInterface
     public function getSortedMovies(string $column, string $direction): Collection
     {
         return Movie::where('is_published', '1')->orderBy($column, $direction)->get();
+    }
+
+    public function getUniqueValues(string $column): SupportCollection
+    {
+        return Movie::pluck($column)->unique();
     }
 }

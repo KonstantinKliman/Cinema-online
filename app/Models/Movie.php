@@ -40,9 +40,9 @@ class Movie extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function comments(): HasMany
+    public function reviews(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Review::class);
     }
 
     public function ratings(): HasMany
@@ -57,6 +57,12 @@ class Movie extends Model
 
     public function persons(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class)->withPivot('role');
+        return $this->belongsToMany(Person::class, 'movie_person_role', 'movie_id', 'person_id')
+                    ->withPivot('role_id');
+    }
+
+    public function personRoles()
+    {
+        return $this->hasMany(MoviePersonRole::class, 'movie_id');
     }
 }

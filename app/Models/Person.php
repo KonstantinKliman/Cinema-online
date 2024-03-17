@@ -14,11 +14,17 @@ class Person extends Model
 
     protected $fillable = [
         'full_name',
-        'person_url',
+        'slug',
     ];
 
     public function movies(): BelongsToMany
     {
-        return $this->belongsToMany(Movie::class)->withPivot('role');
+        return $this->belongsToMany(Movie::class, 'movie_person_role', 'person_id', 'movie_id')
+                    ->withPivot('role_id');
+    }
+
+    public function movieRoles()
+    {
+        return $this->hasMany(MoviePersonRole::class, 'person_id');
     }
 }

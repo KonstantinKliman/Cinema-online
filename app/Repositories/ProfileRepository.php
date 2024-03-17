@@ -17,4 +17,29 @@ class ProfileRepository implements ProfileRepositoryInterface
     {
         return Profile::create(['user_id' => $userId, 'avatar' => 'assets/img/img-profile.png']);
     }
+
+    public function save(Profile $profile)
+    {
+        $profile->save();
+    }
+
+    public function deleteByUserId(int $userId)
+    {
+        Profile::where('user_id', $userId)->delete();
+    }
+
+    public function all()
+    {
+        return Profile::all();
+    }
+
+    public function get(int $profileId)
+    {
+        return Profile::where('id', $profileId)->first();
+    }
+
+    public function delete(int $profileId): bool
+    {
+        return Profile::where('id', $profileId)->delete();
+    }
 }

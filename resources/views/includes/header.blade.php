@@ -13,7 +13,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             @foreach($genres as $genre)
-                                <li><a class="dropdown-item" href="{{ route('genre.page', ['genre_name' => $genre->name]) }}">{{ ucfirst($genre->name) }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('genre.page', ['genre' => $genre->slug]) }}">{{ ucfirst($genre->name) }}</a></li>
                             @endforeach
                         </ul>
                     </li>

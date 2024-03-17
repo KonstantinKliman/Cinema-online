@@ -4,6 +4,9 @@
 namespace App\Services;
 
 
+use App\Http\Requests\Admin\EditGenreRequest;
+use App\Http\Requests\Application\CreateGenreRequest;
+use App\Models\Genre;
 use App\Models\Movie;
 use App\Repositories\Interfaces\GenreRepositoryInterface;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
@@ -27,20 +30,45 @@ class GenreService implements GenreServiceInterface
         return $this->movieRepository->attachGenres($movie, $genres);
     }
 
-    public function getMoviesByGenreName(string $genreName)
+    public function getMoviesByGenre(Genre $genre)
     {
-        $genre = $this->genreRepository->findByGenreName($genreName);
-        $movies = $genre->movies;
-        return $movies;
-    }
-
-    public function getGenreByName(string $genreName)
-    {
-        return $this->genreRepository->findByGenreName($genreName);
+        return $genre->movies;
     }
 
     public function getAllGenres(): Collection
     {
         return $this->genreRepository->all();
+    }
+
+    public function detach(int $genreId, int $movieId)
+    {
+        $movie = $this->movieRepository->getById($movieId);
+        $this->genreRepository->detach($movie, $genreId);
+    }
+
+    public function create(CreateGenreRequest $request)
+    {
+        $data = [
+            'name' => $request->validated('name'),
+            'description' => $request->validated('description'),
+            'slug' => strtolower(str_replace([' ', '.'], ['-', ''],    $request->validated('name'))),
+        ];
+        return $this->genreRepository->create($data);
+    }
+
+    public function edit(EditGenreRequest $request, Genre $genre): string
+    {
+        $data = [
+            'name' => $request->validated('name'),
+            'description' => $request->validated('description'),
+            'slug' => strtolower(str_replace([' ', '.'], ['-', ''],    $request->validated('name'))),
+        ];
+        $this->genreRepository->update($data, $genre);
+        return $genre->slug;
+    }
+
+    public function delete(Genre $genre): void
+    {
+        $this->genreRepository->delete($genre);
     }
 }

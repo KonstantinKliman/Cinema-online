@@ -13,6 +13,7 @@ class Genre extends Model
     protected $fillable = [
         'name',
         'description',
+        'slug'
     ];
 
     public function movies(): BelongsToMany

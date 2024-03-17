@@ -40,3 +40,27 @@
 .link:hover {
     opacity: 100%;
 }
+
+.footer {
+    height: 50px;
+}
+
+.positive-review-bg {
+    background-color: rgba(25, 135, 84, 0.5);
+}
+.neutral-review-bg {
+    background-color: #343a40;
+}
+.negative-review-bg {
+    background-color: rgba(135, 25, 25, 0.5);
+}
+
+.positive-review {
+    color: rgba(25, 135, 84, 0.5);
+}
+.neutral-review {
+    color: #ffffff;
+}
+.negative-review {
+    color: rgba(135, 25, 25, 0.5);
+}

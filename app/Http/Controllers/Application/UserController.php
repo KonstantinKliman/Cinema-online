@@ -7,6 +7,7 @@ use App\Http\Requests\Application\EditUserEmailRequest;
 use App\Http\Requests\Application\EditUserNameRequest;
 use App\Http\Requests\Application\EditUserPasswordRequest;
 use App\Services\Interfaces\UserServiceInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -20,31 +21,31 @@ class UserController extends Controller
 
     public function showUserAccount(Request $request)
     {
-        return view('user-account', ['user' => $request->user()]);
+        return view('user.main', ['user' => $request->user()]);
     }
 
-    public function editUserName(EditUserNameRequest $request, $userId)
+    public function editUserName(EditUserNameRequest $request, $userId): RedirectResponse
     {
         $this->userService->editUserName($request, $userId);
         return redirect()->back()->with('success', 'Name changed successfully');
     }
 
-    public function editUserEmail(EditUserEmailRequest $request, $userId)
+    public function editUserEmail(EditUserEmailRequest $request, $userId): RedirectResponse
     {
         $this->userService->editUserEmail($request, $userId);
-        return redirect()->back()->with('success', 'Profile information changed successfully');
+        return redirect()->back()->with('success', 'Email changed successfully');
     }
 
-    public function editUserPassword(EditUserPasswordRequest $request, $userId)
+    public function editUserPassword(EditUserPasswordRequest $request, $userId): RedirectResponse
     {
         $message = $this->userService->editUserPassword($request, $userId);
         return redirect()->back()->with($message);
     }
 
-    public function deleteUser($userId)
+    public function deleteUser($userId): RedirectResponse
     {
-        $message = $this->userService->deleteUser($userId);
-        return redirect()->route('home.page')->with($message);
+        $this->userService->deleteUser($userId);
+        return redirect()->route('home.page');
     }
 
 }

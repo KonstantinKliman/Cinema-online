@@ -1,3 +1,3 @@
-<h3 class="mx-1 my-3 text-center">
+<h3 class="my-3 text-center">
     {{ $slot }}
 </h3>

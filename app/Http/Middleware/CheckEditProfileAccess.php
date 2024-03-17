@@ -15,7 +15,7 @@ class CheckEditProfileAccess
     public function handle(Request $request, Closure $next)
     {
         $userId = $request->route('user_id');
-        $authenticatedUserId = auth()->user()->id;
+        $authenticatedUserId = $request->user()->id;
 
         if ($userId != $authenticatedUserId) {
             return abort(403);

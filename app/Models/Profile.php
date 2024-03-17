@@ -29,7 +29,7 @@ class Profile extends Model
 
     public function comments(): HasManyThrough
     {
-        return $this->hasManyThrough(Comment::class, User::class);
+        return $this->hasManyThrough(Review::class, User::class);
     }
 
     public function hasAvatar(): bool

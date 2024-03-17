@@ -4,24 +4,26 @@ namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\EditMovieRequest;
+use App\Http\Requests\Application\FilterMovieRequest;
 use App\Http\Requests\Application\MovieSearchRequest;
 use App\Http\Requests\Application\CreateMovieRequest;
 use App\Http\Requests\Application\SortMovieRequest;
 use App\Services\Interfaces\GenreServiceInterface;
 use App\Services\Interfaces\MovieServiceInterface;
-use App\Services\Interfaces\RatingsServiceInterface;
+use App\Services\Interfaces\RatingServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MovieController extends Controller
 {
 
     private MovieServiceInterface $movieService;
-    private RatingsServiceInterface $ratingsService;
+    private RatingServiceInterface $ratingsService;
     private GenreServiceInterface $genreService;
 
-    public function __construct(MovieServiceInterface $movieService, RatingsServiceInterface $ratingsService, GenreServiceInterface $genreService)
+    public function __construct(MovieServiceInterface $movieService, RatingServiceInterface $ratingsService, GenreServiceInterface $genreService)
     {
         $this->movieService = $movieService;
         $this->ratingsService = $ratingsService;
@@ -30,18 +32,17 @@ class MovieController extends Controller
 
     public function showMovieCreateForm(): View
     {
-        return view('add-movie-form', ['genres' => $this->genreService->getAllGenres(), 'movie' => null]);
+        return view('movie.add', ['genres' => $this->genreService->getAllGenres(), 'movie' => null]);
     }
 
     public function createMovie(CreateMovieRequest $request): RedirectResponse
     {
-        ;
         return redirect()->back()->with($this->movieService->createMovie($request));
     }
 
     public function showMoviePage(Request $request, $movieId): View
     {
-        return view('movie', [
+        return view('movie.main', [
             'movie' => $this->movieService->getMovieItem($movieId),
             'user' => $request->user(),
             'userRating' => $request->user()?->id
@@ -53,28 +54,28 @@ class MovieController extends Controller
 
     public function searchMovie(MovieSearchRequest $request): View
     {
-        return view('search-result-page',
+        return view('movie.search-result',
             [
                 'movies' => $this->movieService->searchMovie($request->validated('query')),
                 'request_query' => $request->input('query'),
             ]);
     }
 
-    public function deleteMovie($movieId)
+    public function deleteMovie($movieId): RedirectResponse
     {
-        $this->movieService->delete($movieId);
+        $this->movieService->delete((int)$movieId);
         return redirect('/');
     }
 
     public function showEditMovieForm($movieId): View
     {
-        return view('edit-movie-form', [
+        return view('movie.edit', [
             'movie' => $this->movieService->getMovieItem($movieId),
             'genres' => $this->genreService->getAllGenres(),
         ]);
     }
 
-    public function editMovie($movieId, EditMovieRequest $request)
+    public function editMovie($movieId, EditMovieRequest $request): RedirectResponse
     {
         $this->movieService->edit($movieId, $request);
         return redirect('/movie/' . $movieId);
@@ -86,11 +87,29 @@ class MovieController extends Controller
         return redirect()->back();
     }
 
-    public function sort(SortMovieRequest $request)
+    public function sort(SortMovieRequest $request): View
     {
-        return view('home', [
+        return view('movie.main', [
             'movies' => $this->movieService->sort($request->validated('sort')),
             'genres' => $this->genreService->getAllGenres(),
+            'filterData' => $this->movieService->getFilterData(),
+        ]);
+    }
+
+    public function filter(FilterMovieRequest $request): View
+    {
+        return view('movie.search-result', [
+            'movies' => $this->movieService->filter($request),
+            'genres' => $this->genreService->getAllGenres(),
+            'filterData' => $this->movieService->getFilterData(),
+        ]);
+    }
+
+    public function streamMovie($movieId): BinaryFileResponse
+    {
+        return response()->file($this->movieService->getMovieFilePath($movieId), [
+            'Content-Type' => 'video/mp4',
+            'Accept-Ranges' => 'bytes',
         ]);
     }
 }
