@@ -4,11 +4,11 @@
 
 @section('main')
     <x-header>
-        {{ $review->user->name . '`s review on ' }} <a href="{{ route('admin-movie.page', ['movie_id' => $review->movie->id]) }}" class="link text-light m-0">{{ $review->movie->title }}</a>
+        {{ $review->user->name . '`s review on ' }} <a href="{{ route('admin.movie.show', ['movie_id' => $review->movie->id]) }}" class="link text-light m-0">{{ $review->movie->title }}</a>
     </x-header>
     <div class="row d-flex justify-content-center w-100">
         <div class="col-2 d-flex justify-content-center">
-            <form action="{{ route('publish-review.action', ['review_id' => $review->id]) }}" method="post">
+            <form action="{{ route('admin.review.publish', ['review_id' => $review->id]) }}" method="post">
                 @csrf
                 @if($review->is_published)
                     <button type="submit" class="btn btn-outline-light me-1">Hide</button>
@@ -16,8 +16,8 @@
                     <button type="submit" class="btn btn-outline-light me-1">Publish</button>
                 @endif
             </form>
-            <a href="{{ route('admin-edit-review.page', ['review_id' => $review->id]) }}" class="btn btn-outline-success me-1">Edit</a>
-                <form action="{{ route('delete-review.action', ['review_id' => $review->id]) }}" method="post">
+            <a href="{{ route('admin.review.edit', ['review_id' => $review->id]) }}" class="btn btn-outline-success me-1">Edit</a>
+                <form action="{{ route('admin.review.delete', ['review_id' => $review->id]) }}" method="post">
                     @csrf
                     @method("DELETE")
                     <button class="btn btn-outline-danger" type="submit">Delete</button>

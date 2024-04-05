@@ -36,7 +36,7 @@ class ReviewRepository implements ReviewRepositoryInterface
 
     public function publish(int $reviewId)
     {
-        Review::find($reviewId)->update(['is_pu']);
+        Review::find($reviewId)->update(['is_published']);
     }
 
     public function save(Review $review)

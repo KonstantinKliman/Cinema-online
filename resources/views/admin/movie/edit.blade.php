@@ -5,8 +5,9 @@
 @section('main')
     <h1 class="text-center my-3">Edit a movie</h1>
     <x-container>
-        <form action="{{ route('editMovie.action', ['movie_id' => $movie->id]) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('admin.movie.update', ['movie_id' => $movie->id]) }}" method="post" enctype="multipart/form-data">
             @csrf
+            @method("PUT")
             <div class="input-group mb-3">
                 <span class="input-group-text" id="inputGroup-sizing-default">Title</span>
                 <input type="text" class="form-control @error('title') is-invalid @enderror"

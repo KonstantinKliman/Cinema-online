@@ -11,10 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +26,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'role'
     ];
 
     /**
@@ -48,18 +48,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
-    public static function getRoles()
-    {
-        return [
-            RoleType::administrator->value => 'Administrator',
-            RoleType::uploader->value => 'Uploader',
-            RoleType::moderator->value => 'Moderator',
-            RoleType::subscriber->value => 'Subscriber',
-            RoleType::verified->value => 'Verified',
-            RoleType::user->value => 'User',
-        ];
-    }
-
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
@@ -78,10 +66,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
-    }
-
-    public function roles(): hasMany
-    {
-        return $this->hasMany(Role::class);
     }
 }

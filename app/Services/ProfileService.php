@@ -4,21 +4,20 @@
 namespace App\Services;
 
 
-use App\Enums\RoleType;
+use App\Http\Requests\Application\CreateProfileRequest;
 use App\Http\Requests\Application\EditProfileRequest;
 use App\Http\Requests\Application\PhotoProfileRequest;
 use App\Models\Profile;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
 use App\Services\Interfaces\StorageServiceInterface;
-use Couchbase\Role;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileService implements ProfileServiceInterface
 {
     private ProfileRepositoryInterface $profileRepository;
     private StorageServiceInterface $storageService;
+    private const AVATAR_PATH = 'profile/avatar';
+    private const STORAGE_PATH = 'storage/';
 
     public function __construct(ProfileRepositoryInterface $profileRepository, StorageServiceInterface $storageService)
     {
@@ -54,8 +53,9 @@ class ProfileService implements ProfileServiceInterface
         return $profile;
     }
 
-    public function create(int $userId)
+    public function create(CreateProfileRequest $request)
     {
+        $userId = $request->validated('user_id');
         $this->profileRepository->create($userId);
     }
 
@@ -83,11 +83,29 @@ class ProfileService implements ProfileServiceInterface
 
     public function delete(int $profileId)
     {
-        $user = $this->getProfileById($profileId)->user;
-        if ($this->profileRepository->delete($profileId)) {
-            $user->email_verified_at = null;
-            $user->role = (string)RoleType::user->value;
-            $user->save();
+        $this->profileRepository->delete($profileId);
+    }
+
+    public function update(EditProfileRequest $request, int $profileId): void
+    {
+        $data = [
+            'first_name' => $request->validated('first_name'),
+            'last_name' => $request->validated('last_name'),
+            'date_of_birth' => $request->validated('date_of_birth'),
+            'country' => $request->validated('country'),
+            'city' => $request->validated('city'),
+            'description' => $request->validated('description')
+        ];
+
+        $profile = $this->profileRepository->get($profileId);
+
+        $this->profileRepository->update($profile, $data);
+
+        if ($request->hasFile('avatar')) {
+            $profile->avatar = self::STORAGE_PATH . $request->file('avatar')->store(self::AVATAR_PATH);
         }
+
+        $this->profileRepository->save($profile);
+
     }
 }

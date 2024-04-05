@@ -6,7 +6,7 @@
     <h1 class="text-center my-3">Upload a movie</h1>
     <div class="d-flex flex-column">
         <x-container class="w-50">
-            <form action="{{ route('createMovie.action') }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('admin.movie.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="inputGroup-sizing-default">Title</span>

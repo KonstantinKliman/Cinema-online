@@ -20,4 +20,6 @@ interface ProfileRepositoryInterface
     public function get(int $profileId);
 
     public function delete(int $profileId);
+
+    public function update(Profile $profile, array $data);
 }

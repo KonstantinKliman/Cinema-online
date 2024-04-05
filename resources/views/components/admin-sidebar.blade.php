@@ -1,56 +1,58 @@
 <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style="width: 250px; height: inherit">
-    <a href="{{ route('admin-home.page') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+    <a href="{{ route('admin.index') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <span class="fs-6"><strong>Cinema-online dashboard</strong></span>
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
-            <a href="{{ route('admin-home.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-home.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.index' ? 'active' : '' }} text-light">
                 Home
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-users.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-users.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.user.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.user.index' ? 'active' : '' }} text-light">
                 Users
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-profiles.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-profiles.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.role.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.role.index' ? 'active' : '' }} text-light">
+                Roles
+            </a>
+        </li>
+        @can(['add profile', 'edit profile', 'delete profile'])
+        <li>
+            <a href="{{ route('admin.profile.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.profile.index' ? 'active' : '' }} text-light">
                 Profiles
             </a>
         </li>
+        @endcan
         <li>
-            <a href="{{ route('admin-movies.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-movies.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.movie.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.movie.index' ? 'active' : '' }} text-light">
                 Movies
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-genres.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-genres.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.genres.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.genres.index' ? 'active' : '' }} text-light">
                 Genres
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-persons.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-persons.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.person.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.person.index' ? 'active' : '' }} text-light">
                 Persons
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-reviews.page') }}" class="nav-link {{ Route::currentRouteName() == 'admin-reviews.page' ? 'active' : '' }} text-light">
+            <a href="{{ route('admin.person.role.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.person.role.index' ? 'active' : '' }} text-light">
+                Person roles
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.review.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.review.index' ? 'active' : '' }} text-light">
                 Reviews
             </a>
         </li>
-        <li>
-            <a href="#" class="nav-link link-body-emphasis text-light">
-                Subscribers
-            </a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-body-emphasis text-light">
-                Statistics
-            </a>
-        </li>
         <li class="nav-item">
-            <a href="{{ route('home.page') }}" class="nav-link text-light" aria-current="page">
+            <a href="{{ route('index') }}" class="nav-link text-light" aria-current="page">
                 Cinema-online
             </a>
         </li>

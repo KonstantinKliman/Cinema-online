@@ -17,7 +17,6 @@
                 <p>
                     <strong>Genre</strong> :
                     @foreach($movie->genres as $genre)
-
                         <a href="{{ route('genre.page', ['genre' => $genre->slug]) }}"
                            class="link">
                             {{ ucfirst($genre->name) }}</a>
@@ -28,53 +27,6 @@
                 </p>
                 <p class="text-break"><strong>Description</strong> : {{ $movie->description }}</p>
                 <p><strong>Cinema-online rating</strong> : {{ $movie->rating }}</p>
-                @if($persons)
-                    <hr>
-                    @foreach($persons as $key => $personItem)
-                        <div class="d-flex flex-column w-100 mb-3">
-                        <p class="m-0"><strong>{{ ucfirst($key) . 's:'}}</strong></p>
-                        @foreach($personItem as $person)
-                            <a class="link" href="{{ route('person-page', ['person' => $person->slug]) }}"> {{ $person->full_name }}</a>
-                        @endforeach
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-end">
-                <div class="admin-btn ms-1">
-                    <form action="{{ route('movie.delete', ['movie_id' => $movie->id]) }}" method="post">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-outline-danger editContent p-2" type="submit">
-                            <i class="bi bi-trash"></i>
-                            Delete
-                        </button>
-                    </form>
-                </div>
-                <div class="admin-btn ms-1">
-                    <a class="btn btn-outline-success editContent p-2" href="{{ route('edit-movie.page', ['movie_id' => $movie->id]) }}">
-                        <i class="bi bi-pencil"></i>
-                        Edit
-                    </a>
-                </div>
-                <div class="admin-btn ms-1">
-                    <form action="{{ route('publishMovie.action', ['movie_id' => $movie->id]) }}" method="post">
-                        @csrf
-                        @if(!$movie->is_published)
-                            <button class="btn btn-outline-light editContent p-2" type="submit">
-                                <i class="bi bi-eye"></i>
-                                Publish
-                            </button>
-                        @else
-                            <button class="btn btn-outline-secondary editContent p-2" type="submit">
-                                <i class="bi bi-eye-slash"></i>
-                                Hide
-                            </button>
-                        @endif
-                    </form>
-                </div>
             </div>
         </div>
     </x-container>
@@ -100,56 +52,23 @@
         {{__('Your rating')}}
     </x-header>
     <div class="row d-flex justify-content-center border rounded-3 p-3 mx-1 my-3 bg-light-subtle">
-        @if(auth()->check())
-            <div class="col-4"></div>
-            <div class="col-4 d-flex justify-content-center flex-column">
-                <form action="{{ route('createRating.action', ['movie_id' => $movie->id]) }}" method="post">
-                    @csrf
-                    <div class="d-flex flex-column">
-                        <select class="col-4 bg-dark px-1 m-1 ms-0 form-select @error('rating') is-invalid @enderror"
-                                aria-label="Default select example"
-                                name="rating">
-                            <option selected disabled>Rating</option>
-                            @for($i = 1; $i < 6; $i++)
-                                <option value="{{ $i }}" {{ $userRating == $i ? 'selected' : '' }}>{{ $i }}</option>
-                            @endfor
-                        </select>
-                        <button type="submit" class="btn btn-outline-light my-1">
-                            {{__('Rate film')}}
-                        </button>
-                        @error('rating')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                        @enderror
+        <div class="col d-flex justify-content-center align-content-center">
+            <form action="{{ route('createRating.action', ['movie_id' => $movie->id]) }}" method="post">
+                @csrf
+                <div class="full-stars d-flex flex-column">
+                    <div class="rating-group mb-3">
+                        <input name="rating" value="0" type="radio" disabled checked />
+                        @for($i = 1; $i < 6; $i++)
+                            <label for="rating-{{ $i }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                            </label>
+                            <input name="rating" id="rating-{{ $i }}" value="{{ $i }}" type="radio" {{ $rating == $i ? 'checked' : '' }}/>
+                        @endfor
                     </div>
-                </form>
-                @if($userRating)
-                    <form action="{{ route('deleteRating.action', ['movie_id' => $movie->id]) }}" method="post">
-                        @csrf
-                        @method('DELETE')
-                        <div class="d-flex flex-column">
-                            <button type="submit" class="btn btn-outline-danger my-1">
-                                {{__('Delete your rating')}}
-                            </button>
-                        </div>
-                    </form>
-                @endif
-            </div>
-            <div class="col-4"></div>
-        @else
-            <div class="col d-flex justify-content-center align-items-center">
-                <p class="m-0">
-                    To rate film please
-                    <a href="{{ route('register.page') }}" class="text-decoration-none text-light">
-                        <strong>register</strong>
-                    </a> or
-                    <a href="{{ route('login.page') }}" class="text-decoration-none text-light">
-                        <strong>login</strong>
-                    </a>
-                </p>
-            </div>
-        @endif
+                    <button type="submit" class="btn btn-outline-light">Rate movie</button>
+                </div>
+            </form>
+        </div>
     </div>
     <x-header>
         {{__('User reviews')}}
@@ -183,7 +102,7 @@
                 </select>
                 <input name="title" class="form-control mb-1" type="text" placeholder="Title">
                 <textarea name="review" class="form-control mb-1" cols="30" rows="10" placeholder="Review"></textarea>
-                <button class="btn btn-outline-light my-1" type="submit">Submit</button>
+                <button class="btn btn-outline-light my-1" type="submit">Create</button>
             </div>
         </form>
     </div>

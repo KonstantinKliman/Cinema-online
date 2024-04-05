@@ -115,15 +115,17 @@ class PersonService implements PersonServiceInterface
         $this->roleService->delete($roleId);
     }
 
-    public function attachPersonToMovie(AttachMovieToPersonRequest $request): void
+    public function attachPersonToMovie(AttachMovieToPersonRequest $request): Person
     {
         $personId = $request->validated('person_id');
         $movieId = $request->validated('movie_id');
         $roleId = $request->validated('role_id');
+//        dd($roleId);
         $person = $this->personRepository->get($personId);
         if (!$this->isRecordExists($personId, $movieId, $roleId)) {
             $this->personRepository->attachToMovie($person, $movieId, $roleId);
         };
+        return $person;
     }
 
     public function detachPersonRoleFromMovie(Person $person, int $movieId, int $roleId): void

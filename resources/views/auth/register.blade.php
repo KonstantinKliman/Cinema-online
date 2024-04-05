@@ -49,7 +49,7 @@
                 <a href="{{ route('login.page') }}" class="text-decoration-none text-light fw-semibold">Login</a>
             </div>
             <div class="text-center">
-                <a class="me-1 text-light fw-semibold text-decoration-none" href="{{ route('home.page') }}">Go to home page</a>
+                <a class="me-1 text-light fw-semibold text-decoration-none" href="{{ route('index') }}">Go to home page</a>
             </div>
         </form>
     </div>

@@ -4,6 +4,7 @@
 namespace App\Services\Interfaces;
 
 
+use App\Http\Requests\Application\CreateProfileRequest;
 use App\Http\Requests\Application\EditProfileRequest;
 use App\Http\Requests\Application\PhotoProfileRequest;
 use App\Models\Profile;
@@ -16,7 +17,7 @@ interface ProfileServiceInterface
 
     public function editProfileAvatar(PhotoProfileRequest $request, int $userId): Profile;
 
-    public function create(int $userId);
+    public function create(CreateProfileRequest $request);
 
     public function setDefaultProfilePhoto(int $userId);
 
@@ -27,4 +28,6 @@ interface ProfileServiceInterface
     public function getProfileById(int $profileId);
 
     public function delete(int $profileId);
+
+    public function update(EditProfileRequest $request, int $profileId);
 }

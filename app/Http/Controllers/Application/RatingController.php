@@ -19,17 +19,9 @@ class RatingController extends Controller
         $this->ratingService = $ratingService;
     }
 
-    public function createRating(CreateRatingRequest $request): RedirectResponse
+    public function createRating(CreateRatingRequest $request, $movieId): RedirectResponse
     {
-        $data =
-            [
-                'user_id' => $request->user()->id,
-                'movie_id' => $request->movie_id,
-                'user_rating' => $request->validated()['rating'],
-            ];
-
-        $this->ratingService->createRating($data);
-
+        $this->ratingService->createRating($request, $movieId);
         return redirect()->back();
     }
 

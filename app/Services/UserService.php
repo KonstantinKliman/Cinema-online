@@ -4,17 +4,18 @@ namespace App\Services;
 
 use App\Enums\RoleType;
 use App\Http\Requests\Admin\EditUserRoleRequest;
-use App\Http\Requests\Application\EditUserEmailRequest;
-use App\Http\Requests\Application\EditUserNameRequest;
-use App\Http\Requests\Application\EditUserPasswordRequest;
+use App\Http\Requests\Application\User\CreateRequest;
+use App\Http\Requests\Application\User\EditUserPasswordRequest;
+use App\Http\Requests\Application\User\EditUserRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
+use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class UserService implements UserServiceInterface
 {
@@ -22,34 +23,25 @@ class UserService implements UserServiceInterface
     private UserRepositoryInterface $userRepository;
     private ProfileServiceInterface $profileService;
 
-    public function __construct(UserRepositoryInterface $userRepository, ProfileServiceInterface $profileService)
+    private RoleServiceInterface $roleService;
+    private const DEFAULT_USER_PASSWORD = 'root';
+
+    public function __construct(UserRepositoryInterface $userRepository, ProfileServiceInterface $profileService, RoleServiceInterface $roleService)
     {
         $this->userRepository = $userRepository;
         $this->profileService = $profileService;
+        $this->roleService = $roleService;
     }
 
-    public function create(array $data)
+    public function store(CreateRequest $request)
     {
+        $data = [
+            'name' => $request->validated('name'),
+            'email' => $request->validated('email'),
+            'password' => Hash::make(self::DEFAULT_USER_PASSWORD)
+        ];
         $user = $this->userRepository->create($data);
-        if ((int)$user->role == RoleType::user->value) {
-            $this->profileService->create($user->id);
-        }
-        return $user;
-    }
-
-    public function editUserName(EditUserNameRequest $request, int $userId): User
-    {
-        $user = $this->userRepository->getByUserId($userId);
-        $this->userRepository->editUserName($user, $request->validated('name'));
-        $this->userRepository->save($user);
-        return $user;
-    }
-
-    public function editUserEmail(EditUserEmailRequest $request, int $userId): User
-    {
-        $user = $this->userRepository->getByUserId($userId);
-        $this->userRepository->editUserEmail($user, $request->validated('email'));
-        $this->userRepository->save($user);
+        $user->assignRole('user');
         return $user;
     }
 
@@ -68,7 +60,7 @@ class UserService implements UserServiceInterface
         return $message = ['password_success' => 'Password changed successfully.'];
     }
 
-    public function deleteUser(int $userId): void
+    public function destroy(int $userId): void
     {
         $user = $this->userRepository->getByUserId($userId);
         if ($user->profile) {
@@ -112,5 +104,20 @@ class UserService implements UserServiceInterface
             $user->email_verified_at = date('Y-m-d H:i:s');
             $user->save();
         }
+    }
+
+    public function update(EditUserRequest $request, $userId)
+    {
+        $data = [
+            'name' => $request->validated('name'),
+            'email' => $request->validated('email'),
+        ];
+        $user = $this->userRepository->getByUserId($userId);
+        $newRoleName = $this->roleService->get($request->validated('role'))->name;
+        $oldRoleName = $user->roles()->first()->name;
+        $this->userRepository->update($user, $data);
+        $user->removeRole($oldRoleName);
+        $user->assignRole($newRoleName);
+        $this->userRepository->save($user);
     }
 }

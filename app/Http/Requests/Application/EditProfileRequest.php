@@ -15,6 +15,7 @@ class EditProfileRequest extends FormRequest
             'country' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
             'city' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/'],
             'description' => ['nullable', 'string'],
+            'profile_photo' => ['dimensions:min_width=500,min_height=500', 'dimensions:max_width=500,max_height=500', 'image', 'max:2048'],
         ];
     }
 }

@@ -25,4 +25,6 @@ interface UserRepositoryInterface
     public function getAllRoles(): array;
 
     public function editUserRole(int $userId, string $role);
+
+    public function update(User $user, array $data);
 }

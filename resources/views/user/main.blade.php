@@ -20,32 +20,37 @@
         {{--Edit user information--}}
         <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
             <h5 class="my-3 border-bottom pb-3">Edit your account information</h5>
-            <form action="{{ route('edit-user-name.action', ['user_id' => $user->id]) }}" method="post">
+            <form action="{{ route('user.update', ['user_id' => $user->id]) }}" method="post">
                 @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                           value="{{ old('name', $user->name) }}" name="name">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('name')
-                    <div class="invalid-feedback">
-                        {{ $message }}
+                @method("PUT")
+                <div class="row d-flex flex-column">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   value="{{ old('name', $user->name) }}" name="name">
+                            @error('name')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
                     </div>
-                    @enderror
-                </div>
-            </form>
-            <form action="{{ route('edit-user-email.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Email <span class="text-danger fw-bold">*</span></span>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                           value="{{ old('email', $user->email) }}" name="email">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('email')
-                    <div class="invalid-feedback">
-                        {{ $message }}
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Email <span class="text-danger fw-bold">*</span></span>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   value="{{ old('email', $user->email) }}" name="email">
+                            @error('email')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
                     </div>
-                    @enderror
+                    <div class="col d-flex justify-content-center mb-3">
+                        <button type="submit" class="btn btn-light fw-medium">Edit</button>
+                    </div>
                 </div>
             </form>
             @if(session('success'))

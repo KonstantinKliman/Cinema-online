@@ -39,7 +39,7 @@ interface PersonServiceInterface
 
     public function deletePersonRole(int $roleId);
 
-    public function attachPersonToMovie(AttachMovieToPersonRequest $request): void;
+    public function attachPersonToMovie(AttachMovieToPersonRequest $request): Person;
 
     public function detachPersonRoleFromMovie(Person $person, int $movieId, int $roleId);
 

@@ -11,8 +11,9 @@
     </div>
     <div class="d-flex flex-column">
         <x-container class="w-50">
-            <form action="{{ route('edit-genre.action', ['genre' => $genre->slug]) }}" method="post">
+            <form action="{{ route('admin.genre.update', ['genre' => $genre->slug]) }}" method="post">
                 @csrf
+                @method("PUT")
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="inputGroup-sizing-default">Name</span>
                     <input type="text" class="form-control @error('name') is-invalid @enderror"

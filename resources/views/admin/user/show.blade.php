@@ -14,16 +14,15 @@
                 <strong>Name: </strong>{{ $user->name }}
             </p>
             <p>
-                <strong>Email: </strong>
-                <span class="{{ $user->hasVerifiedEmail() ? 'text-success' : 'text-danger' }}">{{ $user->email }}</span>
+                <strong>Email: </strong>{{ $user->email }}
+                @if($user->hasVerifiedEmail())
+                    <span class="badge text-bg-success">Verified email</span>
+                @else
+                    <span class="badge text-bg-danger">Not verified email</span>
+                @endif
             </p>
             <p>
-                <strong>Role:</strong>
-                @foreach($roles as $index => $role)
-                    @if($index == $user->role)
-                        <span>{{ $role }}</span>
-                    @endif
-                @endforeach
+                <strong>Role: </strong><span class="badge text-bg-success">{{ ucfirst($user->roles()->first()->name) }}</span>
             </p>
         </div>
     </div>

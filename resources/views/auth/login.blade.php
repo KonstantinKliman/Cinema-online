@@ -30,7 +30,7 @@
                     <input type="checkbox" name="remember_me"> Remember me
                 </label>
             </div>
-            <button class="w-100 btn btn-lg btn-light mb-3" type="submit">Login</button>
+            <x-form-button type="primary" size="lg" text="Login"/>
             @if($errors->default->first('auth_error'))
             <div class="alert alert-danger alert-dismissible" role="alert">
                 {{ $errors->default->first('auth_error') }}
@@ -42,7 +42,7 @@
                 <a href="{{ route('register.page') }}" class="text-decoration-none text-light fw-semibold">Register</a>
             </div>
             <div class="text-center">
-                <a class="me-1 text-light fw-semibold text-decoration-none" href="{{ route('home.page') }}">Go to home page</a>
+                <a class="me-1 text-light fw-semibold text-decoration-none" href="{{ route('index') }}">Go to home page</a>
             </div>
         </form>
     </div>

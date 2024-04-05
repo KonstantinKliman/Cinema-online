@@ -34,14 +34,14 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): RedirectResponse
     {
         $this->authService->register($request);
-        return redirect()->route('home.page');
+        return redirect()->route('index');
     }
 
     public function login(LoginRequest $request): RedirectResponse
     {
         $isRememberMe = (bool)$request->remember_me;
         if ($this->authService->login($request->validated(), $isRememberMe)) {
-            return redirect()->route('home.page');
+            return redirect()->route('index');
         }
         return redirect()->back()->withErrors(['auth_error' => 'Incorrect credentials']);
     }
@@ -49,7 +49,7 @@ class AuthController extends Controller
     public function logout(): RedirectResponse
     {
         $this->authService->logout();
-        return redirect()->route('home.page');
+        return redirect()->route('index');
     }
 
     public function verifyEmailPage(): View
@@ -60,7 +60,7 @@ class AuthController extends Controller
     public function verifyEmail(EmailVerificationRequest $request): RedirectResponse
     {
         $this->authService->verifyEmail($request);
-        return redirect()->route('home.page');
+        return redirect()->route('index');
     }
 
     public function resendVerificationLink(Request $request): RedirectResponse

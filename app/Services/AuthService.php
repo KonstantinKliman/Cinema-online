@@ -8,7 +8,6 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use App\Services\Interfaces\AuthServiceInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
-use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
@@ -30,6 +29,7 @@ class AuthService implements AuthServiceInterface
     public function register(RegisterRequest $request): User
     {
         $user = $this->userService->create($request->validated());
+        $user->assignRole('user');
         event(new Registered($user));
         $this->login([
             'email' => $request->validated('email'),

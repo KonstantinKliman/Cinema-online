@@ -35,11 +35,16 @@ class ProfileRepository implements ProfileRepositoryInterface
 
     public function get(int $profileId)
     {
-        return Profile::where('id', $profileId)->first();
+        return Profile::find($profileId);
     }
 
-    public function delete(int $profileId): bool
+    public function delete(int $profileId): void
     {
-        return Profile::where('id', $profileId)->delete();
+        Profile::destroy($profileId);
+    }
+
+    public function update(Profile $profile, array $data)
+    {
+        $profile->update($data);
     }
 }

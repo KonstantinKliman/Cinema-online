@@ -5,6 +5,7 @@ namespace App\Services\Interfaces;
 
 use App\Http\Requests\Admin\EditReviewRequest;
 use App\Http\Requests\Application\CreateReviewRequest;
+use App\Http\Requests\Admin\CreateReviewRequest as CreateReviewAdminRequest;
 use App\Models\Review;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -21,4 +22,6 @@ interface ReviewServiceInterface
     public function edit(EditReviewRequest $request, bool $isPublished, int $reviewId);
 
     public function publish(int $reviewId);
+
+    public function createReviewByAdmin(CreateReviewAdminRequest $request);
 }

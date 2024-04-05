@@ -10,7 +10,7 @@
     </div>
     <div class="d-flex flex-column">
         <x-container class="w-50">
-            <form action="{{ route('edit-review.action', ['review_id' => $review->id]) }}" method="post">
+            <form action="{{ route('admin.review.update', ['review_id' => $review->id]) }}" method="post">
                 @csrf
                 @method("PUT")
                 <div class="input-group mb-3">

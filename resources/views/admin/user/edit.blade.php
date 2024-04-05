@@ -11,47 +11,50 @@
         </div>
     </div>
     <div class="d-flex flex-column align-items-center mb-5">
-        {{--Edit user information--}}
         <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
             <h5 class="my-3 border-bottom pb-3">Edit account information</h5>
-            <form action="{{ route('edit-user-name.action', ['user_id' => $user->id]) }}" method="post">
+            <form action="{{ route('admin.user.update', ['user_id' => $user->id]) }}" method="post">
                 @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                           value="{{ old('name', $user->name) }}" name="name">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('name')
-                    <div class="invalid-feedback">
-                        {{ $message }}
+                @method("PUT")
+                <div class="row d-flex flex-column">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   value="{{ old('name', $user->name) }}" name="name">
+                            @error('name')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
                     </div>
-                    @enderror
-                </div>
-            </form>
-            <form action="{{ route('edit-user-email.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Email <span class="text-danger fw-bold">*</span></span>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                           value="{{ old('email', $user->email) }}" name="email">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Confirm</button>
-                    @error('email')
-                    <div class="invalid-feedback">
-                        {{ $message }}
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Email <span class="text-danger fw-bold">*</span></span>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   value="{{ old('email', $user->email) }}" name="email">
+                            @error('email')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
                     </div>
-                    @enderror
-                </div>
-            </form>
-            <form action="{{ route('edit-user-role.action', ['user_id' => $user->id]) }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <select class="form-select" name="role" id="inputGroupSelect04" aria-label="Example select with button addon">
-                        @foreach($roles as $id => $role)
-                            <option
-                                value="{{ $id }}" {{ $id == $user->role ? 'selected disabled' : '' }}>{{ $role }}</option>
-                        @endforeach
-                    </select>
-                    <button class="btn btn-outline-secondary" type="submit">Confirm</button>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="role_select">Role</label>
+                            <select class="form-select" id="role_select" name="role">
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}" @selected($user->roles()->first()->name == $role->name)>
+                                        {{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col d-flex justify-content-center mb-3">
+                        <button type="submit" class="btn btn-light fw-medium">Edit</button>
+                    </div>
                 </div>
             </form>
             @if(session('success'))

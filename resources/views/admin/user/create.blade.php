@@ -14,7 +14,7 @@
     <div class="d-flex flex-column align-items-center mb-5">
         {{--Edit user information--}}
         <div class="border bg-light-subtle rounded-3 py-3 px-3 mb-5 w-50">
-            <form action="{{ route('create-user.action') }}" method="post">
+            <form action="{{ route('admin.user.store') }}" method="post">
                 @csrf
                 <div class="input-group mb-3">
                     <span class="input-group-text">Name <span class="text-danger fw-bold">*</span></span>
@@ -38,14 +38,6 @@
                     @enderror
                 </div>
                 @csrf
-                <div class="input-group mb-3">
-                    <select class="form-select" name="role" id="inputGroupSelect04" aria-label="Example select with button addon">
-                        @foreach($roles as $id => $role)
-                            <option
-                                value="{{ $id }}">{{ $role }}</option>
-                        @endforeach
-                    </select>
-                </div>
                 <div class="row d-flex justify-content-center">
                     <div class="w-auto p-0">
                         <button class="btn btn-outline-light" type="submit">Create</button>

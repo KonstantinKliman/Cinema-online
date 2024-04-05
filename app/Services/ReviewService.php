@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Admin\CreateReviewRequest as CreateReviewAdminRequest;
 use App\Http\Requests\Admin\EditReviewRequest;
 use App\Http\Requests\Application\CreateReviewRequest;
 use App\Models\Review;
@@ -33,7 +34,7 @@ class ReviewService implements ReviewServiceInterface
 
         $review = $this->reviewRepository->create($data);
 
-        return ['create_comment_success' => 'Review posted.'];
+        return ['create_review_success' => 'Review posted.'];
     }
 
     public function delete(int $reviewId): void
@@ -68,5 +69,18 @@ class ReviewService implements ReviewServiceInterface
         $review = $this->reviewRepository->get($reviewId);
         $review->is_published = !$review->is_published;
         $this->reviewRepository->save($review);
+    }
+
+    public function createReviewByAdmin(CreateReviewAdminRequest $request)
+    {
+        $data = [
+            'movie_id' => $request->validated('movie_id'),
+            'user_id' => $request->user()->id,
+            'title' => $request->validated('title'),
+            'review' => $request->validated('review'),
+            'type' => $request->validated('type'),
+            'is_published' => $request->validated('is_published'),
+        ];
+        $this->reviewRepository->create($data);
     }
 }

@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Application\CreateRatingRequest;
 use App\Models\Rating;
 use App\Repositories\Interfaces\RatingRepositoryInterface;
 use App\Services\Interfaces\MovieServiceInterface;
@@ -25,8 +26,13 @@ class RatingService implements RatingServiceInterface
         $this->movieService->updateMovieRating($movieId);
     }
 
-    public function createRating(array $data): void
+    public function createRating(CreateRatingRequest $request, $movieId): void
     {
+        $data = [
+            'user_id' => $request->user()->id,
+            'movie_id' => $movieId,
+            'user_rating' => $request->validated('rating')
+        ];
 
         $rating = $this->ratingsRepository->firstOrNew($data['user_id'], $data['movie_id']);
 

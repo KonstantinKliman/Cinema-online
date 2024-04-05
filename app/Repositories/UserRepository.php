@@ -54,4 +54,9 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::where(['id' => $userId])->update(['role' => $role]);
     }
+
+    public function update(User $user, array $data)
+    {
+        $user->update($data);
+    }
 }

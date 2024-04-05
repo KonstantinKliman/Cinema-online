@@ -3,9 +3,9 @@
         <div class="collapse navbar-collapse mt-lg-0 mt-md-2" id="navbarNavDropdown">
             <div class="d-flex justify-content-between align-items-center w-100">
                 <ul class="navbar-nav text-center">
-                        <a class="navbar-brand" href="{{ route('home.page') }}">Cinema-online</a>
+                        <a class="navbar-brand" href="{{ route('index') }}">Cinema-online</a>
                     <li class="nav-item">
-                        <a class="nav-link active m-0" aria-current="page" href="{{ route('home.page') }}">Home</a>
+                        <a class="nav-link active m-0" aria-current="page" href="{{ route('index') }}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -17,6 +17,13 @@
                             @endforeach
                         </ul>
                     </li>
+                    @if(auth()->check())
+                        @if(!auth()->user()->hasRole('user'))
+                            <li class="nav-item">
+                                <a class="nav-link active m-0" aria-current="page" href="{{ route('admin.index') }}">Admin dashboard</a>
+                            </li>
+                        @endif
+                    @endif
                 </ul>
                 @if(auth()->check())
                     <div class="dropdown">
@@ -25,7 +32,7 @@
                             {{ auth()->user()->name }}
                         </button>
                         <ul class="dropdown-menu-end dropdown-menu" >
-                            <li><a class="dropdown-item text-end" href="{{ route('user.page', ['user_id' => auth()->user()->id]) }}">Your account</a></li>
+                            <li><a class="dropdown-item text-end" href="{{ route('user.index', ['user_id' => auth()->user()->id]) }}">Your account</a></li>
                             <li><a class="dropdown-item text-end" href="{{ route('profile.page', ['user_id' => auth()->user()->id]) }}">Your profile</a></li>
                             <li><a class="dropdown-item text-end" href="{{ route('edit-profile-form.page', ['user_id' => auth()->user()->id]) }}">Edit profile</a></li>
                             <li><hr class="dropdown-divider"></li>
