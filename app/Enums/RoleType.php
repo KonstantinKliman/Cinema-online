@@ -4,11 +4,10 @@ namespace App\Enums;
 
 enum RoleType: int
 {
-    case administrator = 0;
-    case uploader = 1;
-    case moderator = 2;
-    case subscriber = 3;
-    case verified = 4;
-    case user = 5;
+    case Administrator = 1;
+    case Moderator = 2;
+    case Uploader = 3;
+    case Verified = 4;
+    case User = 5;
 }
 

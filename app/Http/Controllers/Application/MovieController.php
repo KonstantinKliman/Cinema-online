@@ -20,14 +20,10 @@ class MovieController extends Controller
 {
 
     private MovieServiceInterface $movieService;
-    private RatingServiceInterface $ratingsService;
-    private GenreServiceInterface $genreService;
 
-    public function __construct(MovieServiceInterface $movieService, RatingServiceInterface $ratingsService, GenreServiceInterface $genreService)
+    public function __construct(MovieServiceInterface $movieService)
     {
         $this->movieService = $movieService;
-        $this->ratingsService = $ratingsService;
-        $this->genreService = $genreService;
     }
 
     public function showMoviePage(Request $request, $movieId): View
@@ -35,12 +31,12 @@ class MovieController extends Controller
         return view('movie.main', [
             'movie' => $this->movieService->getMovieItem($movieId),
             'user' => $request->user(),
-            'rating' => $this->ratingsService->getUserRatingOnMovie($request->user()->id, $movieId),
+            'rating' => $this->movieService->getUserRatingOnMovie($request->user()->id, $movieId),
             'person' => $this->movieService->getPersonOnMovie($movieId, $request),
         ]);
     }
 
-    public function searchMovie(MovieSearchRequest $request): View
+    public function searchMovie(MovieSearchRequest $request): View //
     {
         return view('movie.search-result',
             [
@@ -49,37 +45,37 @@ class MovieController extends Controller
             ]);
     }
 
-    public function delete($movieId): RedirectResponse
+    public function delete($movieId): RedirectResponse //
     {
         $this->movieService->delete((int)$movieId);
-        return redirect()->route('admin.movie.index');
+        return redirect()->route('dashboard.movie.index');
     }
 
-    public function publish($movieId): RedirectResponse
+    public function publish($movieId): RedirectResponse //
     {
         $this->movieService->publish($movieId);
         return redirect()->back();
     }
 
-    public function sort(SortMovieRequest $request): View
+    public function sort(SortMovieRequest $request): View //
     {
         return view('movie.main', [
             'movies' => $this->movieService->sort($request->validated('sort')),
-            'genres' => $this->genreService->getAllGenres(),
+            'genres' => $this->movieService->getAllGenres(),
             'filterData' => $this->movieService->getFilterData(),
         ]);
     }
 
-    public function filter(FilterMovieRequest $request): View
+    public function filter(FilterMovieRequest $request): View //
     {
         return view('movie.search-result', [
             'movies' => $this->movieService->filter($request),
-            'genres' => $this->genreService->getAllGenres(),
+            'genres' => $this->movieService->getAllGenres(),
             'filterData' => $this->movieService->getFilterData(),
         ]);
     }
 
-    public function streamMovie($movieId): BinaryFileResponse
+    public function streamMovie($movieId): BinaryFileResponse //
     {
         return response()->file($this->movieService->getMovieFilePath($movieId), [
             'Content-Type' => 'video/mp4',
@@ -87,40 +83,40 @@ class MovieController extends Controller
         ]);
     }
 
-    public function index(): View
+    public function index(): View //
     {
-        return view('admin.movie.index', ['movies' => $this->movieService->all()]);
+        return view('dashboard.movie.index', ['movies' => $this->movieService->all()]);
     }
 
-    public function create(): View
+    public function create(): View //
     {
-        return view('admin.movie.create', ['genres' => $this->genreService->getAllGenres()]);
+        return view('dashboard.movie.create', ['genres' => $this->movieService->getAllGenres()]);
     }
 
-    public function store(CreateMovieRequest $request): RedirectResponse
+    public function store(CreateMovieRequest $request): RedirectResponse //
     {
         return redirect()->back()->with($this->movieService->createMovie($request));
     }
 
-    public function adminShow(int $movieId, Request $request)
+    public function adminShow(int $movieId, Request $request): View
     {
-        return view('admin.movie.show', [
+        return view('dashboard.movie.show', [
             'movie' => $this->movieService->getMovieItem($movieId),
             'person' => $this->movieService->getPersonOnMovie($movieId, $request),
         ]);
     }
 
-    public function edit(int $movieId)
+    public function edit(int $movieId): View
     {
-        return view('admin.movie.edit', [
+        return view('dashboard.movie.edit', [
             'movie' => $this->movieService->getMovieItem($movieId),
-            'genres' => $this->genreService->getAllGenres(),
+            'genres' => $this->movieService->getAllGenres(),
         ]);
     }
 
     public function update(int $movieId, EditMovieRequest $request): RedirectResponse
     {
         $this->movieService->edit($movieId, $request);
-        return redirect()->route('admin.movie.show', ['movie_id' => $movieId]);
+        return redirect()->route('dashboard.movie.show', ['movie_id' => $movieId]);
     }
 }

@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
 <body>
-    @yield('main')
+    <div class="container-fluid">
+        <div class="row vh-100">
+            <div class="col-12 p-0">
+                @yield('main')
+            </div>
+        </div>
+    </div>
 </body>
 </html>

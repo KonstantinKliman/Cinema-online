@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PersonRole extends Model
 {
@@ -15,7 +16,7 @@ class PersonRole extends Model
         'name'
     ];
 
-    public function moviePersonRole()
+    public function moviePersonRole(): HasMany
     {
         return $this->hasMany(MoviePersonRole::class);
     }

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Admin\CreatePersonRoleRequest;
-use App\Http\Requests\Admin\EditPersonRoleRequest;
+use App\Http\Requests\Dashboard\CreatePersonRoleRequest;
+use App\Http\Requests\Dashboard\EditPersonRoleRequest;
 use App\Models\PersonRole;
 use App\Repositories\Interfaces\PersonRoleRepositoryInterface;
 use App\Services\Interfaces\PersonRoleServiceInterface;

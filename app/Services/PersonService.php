@@ -4,16 +4,18 @@
 namespace App\Services;
 
 
-use App\Http\Requests\Admin\AttachMovieToPersonRequest;
-use App\Http\Requests\Admin\CreatePersonRoleRequest;
-use App\Http\Requests\Admin\EditPersonRequest;
-use App\Http\Requests\Admin\EditPersonRoleRequest;
+use App\Http\Requests\Dashboard\AttachMovieToPersonRequest;
+use App\Http\Requests\Dashboard\CreatePersonRoleRequest;
+use App\Http\Requests\Dashboard\EditPersonRequest;
+use App\Http\Requests\Dashboard\EditPersonRoleRequest;
 use App\Http\Requests\Application\CreatePersonRequest;
 use App\Models\Movie;
 use App\Models\Person;
 use App\Models\PersonRole;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Repositories\Interfaces\PersonRepositoryInterface;
+use App\Repositories\Interfaces\PersonRoleRepositoryInterface;
+use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Services\Interfaces\PersonRoleServiceInterface;
 use App\Services\Interfaces\PersonServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,13 +25,13 @@ class PersonService implements PersonServiceInterface
 
     private PersonRepositoryInterface $personRepository;
     private MovieRepositoryInterface $movieRepository;
-    private PersonRoleServiceInterface $roleService;
+    private PersonRoleRepositoryInterface $personRoleRepository;
 
-    public function __construct(PersonRepositoryInterface $personRepository, MovieRepositoryInterface $movieRepository, PersonRoleServiceInterface $roleService)
+    public function __construct(PersonRepositoryInterface $personRepository, MovieRepositoryInterface $movieRepository, PersonRoleRepositoryInterface $personRoleRepository)
     {
         $this->personRepository = $personRepository;
         $this->movieRepository = $movieRepository;
-        $this->roleService = $roleService;
+        $this->personRoleRepository = $personRoleRepository;
     }
 
     private function isRecordExists(int $personId, int $movieId, int $roleId)
@@ -90,29 +92,35 @@ class PersonService implements PersonServiceInterface
         return $person->slug;
     }
 
-    public function createPersonRole(CreatePersonRoleRequest $request): void
+    public function createPersonRole(CreatePersonRoleRequest $request)
     {
-        $this->roleService->create($request);
+        $data = [
+            'name' => ucfirst($request->validated('name')),
+        ];
+        return $this->personRoleRepository->create($data);
     }
 
     public function getAllPersonRoles(): Collection
     {
-        return $this->roleService->all();
+        return $this->personRoleRepository->all();
     }
 
     public function getPersonRole(int $roleId): PersonRole
     {
-        return $this->roleService->get($roleId);
+        return $this->personRoleRepository->get($roleId);
     }
 
     public function editPersonRoleName(EditPersonRoleRequest $request, int $roleId)
     {
-        return $this->roleService->edit($request, $roleId);
+        $data = [
+            'name' => ucfirst($request->validated('name')),
+        ];
+        return $this->personRoleRepository->edit($roleId, $data);
     }
 
     public function deletePersonRole(int $roleId)
     {
-        $this->roleService->delete($roleId);
+        $this->personRoleRepository->delete($roleId);
     }
 
     public function attachPersonToMovie(AttachMovieToPersonRequest $request): Person
@@ -120,7 +128,6 @@ class PersonService implements PersonServiceInterface
         $personId = $request->validated('person_id');
         $movieId = $request->validated('movie_id');
         $roleId = $request->validated('role_id');
-//        dd($roleId);
         $person = $this->personRepository->get($personId);
         if (!$this->isRecordExists($personId, $movieId, $roleId)) {
             $this->personRepository->attachToMovie($person, $movieId, $roleId);
@@ -136,5 +143,10 @@ class PersonService implements PersonServiceInterface
     public function delete(Person $person): void
     {
         $this->personRepository->delete($person);
+    }
+
+    public function getAllMovies()
+    {
+        return $this->movieRepository->all();
     }
 }

@@ -1,9 +1,9 @@
-@extends('layouts.main')
+@extends('layouts.dashboard')
 
 @section('title', 'Your user account')
 
 @section('main')
-    <h1 class="text-center my-3">Your account</h1>
+    <h1 class="text-center mb-3">Your account</h1>
     @if(!auth()->user()->hasVerifiedEmail())
         <p class="text-center form-text">
             To access your profile, you need to verify your email. If you did not receive an email, please click
@@ -11,14 +11,14 @@
                onclick="event.preventDefault(); document.getElementById('verification-form').submit();">
                 here
             </a>
-        <form id="verification-form" method="POST" action="{{ route('verification.send') }}" style="display: none;">
-            @csrf
-        </form>
+            <form id="verification-form" method="POST" action="{{ route('verification.send') }}" style="display: none;">
+                @csrf
+            </form>
         </p>
     @endif
     <div class="d-flex flex-column align-items-center">
         {{--Edit user information--}}
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
+        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-100">
             <h5 class="my-3 border-bottom pb-3">Edit your account information</h5>
             <form action="{{ route('user.update', ['user_id' => $user->id]) }}" method="post">
                 @csrf
@@ -61,7 +61,7 @@
             @endif
         </div>
         {{--Edit user password--}}
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
+        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-100">
             <form action="{{ route('edit-user-password.action', ['user_id' => $user->id]) }}" method="post">
                 @csrf
                 <h5 class="my-3 border-bottom pb-3">Edit your password</h5>

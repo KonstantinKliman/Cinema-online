@@ -5,25 +5,29 @@ namespace App\Services;
 
 use App\Http\Requests\Application\CreateRatingRequest;
 use App\Models\Rating;
+use App\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Repositories\Interfaces\RatingRepositoryInterface;
 use App\Services\Interfaces\MovieServiceInterface;
 use App\Services\Interfaces\RatingServiceInterface;
+use Illuminate\Http\Request;
 
 class RatingService implements RatingServiceInterface
 {
 
     private RatingRepositoryInterface $ratingsRepository;
-    private MovieServiceInterface $movieService;
+    private MovieRepositoryInterface $movieRepository;
 
-    public function __construct(RatingRepositoryInterface $ratingsRepository, MovieServiceInterface $movieService)
+    public function __construct(RatingRepositoryInterface $ratingsRepository, MovieRepositoryInterface $movieRepository)
     {
         $this->ratingsRepository = $ratingsRepository;
-        $this->movieService = $movieService;
+        $this->movieRepository = $movieRepository;
     }
 
     private function updateMovieRating($movieId): void
     {
-        $this->movieService->updateMovieRating($movieId);
+        $movie = $this->movieRepository->getById($movieId);
+        $this->movieRepository->updateAverageRating($movie);
+        $this->movieRepository->save($movie);
     }
 
     public function createRating(CreateRatingRequest $request, $movieId): void
@@ -61,5 +65,13 @@ class RatingService implements RatingServiceInterface
     public function deleteRating(int $userId, int $movieId): bool
     {
        return $this->ratingsRepository->delete($userId, $movieId);
+    }
+
+
+    public function getRatingsForUser(Request $request)
+    {
+        $userId = $request->user()->id;
+        $ratings = Rating::query()->where('user_id', $userId)->get();
+        return $ratings;
     }
 }

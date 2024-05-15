@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MoviePersonRole extends Model
 {
@@ -17,17 +18,17 @@ class MoviePersonRole extends Model
         'role_id'
     ];
 
-    public function movie()
+    public function movie(): BelongsTo
     {
         return $this->belongsTo(Movie::class,'movie_id');
     }
 
-    public function person()
+    public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class,'person_id');
     }
 
-    public function role()
+    public function role(): BelongsTo
     {
         return $this->belongsTo(PersonRole::class, 'role_id');
     }

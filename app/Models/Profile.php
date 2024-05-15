@@ -31,16 +31,4 @@ class Profile extends Model
     {
         return $this->hasManyThrough(Review::class, User::class);
     }
-
-    public function hasAvatar(): bool
-    {
-        $defaultAvatarPath = 'assets/img/img-profile.png';
-
-        if ($this->avatar !== $defaultAvatarPath) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 }

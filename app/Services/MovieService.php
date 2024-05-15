@@ -3,38 +3,35 @@
 namespace App\Services;
 
 
-use App\Enums\FilterType;
 use App\Enums\SortType;
 use App\Http\Requests\Application\CreateMovieRequest;
 use App\Http\Requests\Application\EditMovieRequest;
 use App\Http\Requests\Application\FilterMovieRequest;
 use App\Models\Movie;
+use App\Repositories\Interfaces\GenreRepositoryInterface;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
-use App\Services\Interfaces\GenreServiceInterface;
-use App\Services\Interfaces\MovieServiceInterface;
-use App\Services\Interfaces\PersonServiceInterface;
-use App\Services\Interfaces\StorageServiceInterface;
+use App\Repositories\Interfaces\PersonRepositoryInterface;
+use App\Repositories\Interfaces\RatingRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use App\Enums\RoleType;
-use Ramsey\Collection\Sort;
+use Illuminate\Support\Facades\Storage;
 
 class MovieService implements MovieServiceInterface
 {
 
     private MovieRepositoryInterface $movieRepository;
-    private GenreServiceInterface $genreService;
-    private PersonServiceInterface $personService;
-    private StorageServiceInterface $storageService;
+    private RatingRepositoryInterface $ratingRepository;
+    private PersonRepositoryInterface $personRepository;
+    private GenreRepositoryInterface $genreRepository;
     private const STORAGE_PATH = 'storage/';
     private const MOVIE_PATH = 'movies/';
 
-    public function __construct(MovieRepositoryInterface $movieRepository, GenreServiceInterface $genreService, PersonServiceInterface $personService, StorageServiceInterface $storageService)
+    public function __construct(MovieRepositoryInterface $movieRepository, RatingRepositoryInterface $ratingRepository, PersonRepositoryInterface $personRepository, GenreRepositoryInterface $genreRepository)
     {
         $this->movieRepository = $movieRepository;
-        $this->genreService = $genreService;
-        $this->personService = $personService;
-        $this->storageService = $storageService;
+        $this->ratingRepository = $ratingRepository;
+        $this->personRepository = $personRepository;
+        $this->genreRepository= $genreRepository;
     }
 
     public function createMovie(CreateMovieRequest $request): array
@@ -54,7 +51,7 @@ class MovieService implements MovieServiceInterface
             $movie->poster_file_path = self::STORAGE_PATH . $request->file('poster_file_path')->store(self::MOVIE_PATH . $movie->id);
             $this->movieRepository->save($movie);
             $genres = $request->validated('genres');
-            $this->genreService->createGenreForMovie($movie, $genres);
+            $this->movieRepository->attachGenres($movie, $genres);
 
             return ['create_movie_success' => 'Movie "' . $movie->title . '" uploaded.'];
         }
@@ -69,13 +66,6 @@ class MovieService implements MovieServiceInterface
     public function searchMovie(string $query): Collection
     {
         return $this->movieRepository->getCollectionByQuery($query);
-    }
-
-    public function updateMovieRating(int $movieId): void
-    {
-        $movie = $this->movieRepository->getById($movieId);
-        $this->movieRepository->updateAverageRating($movie);
-        $this->movieRepository->save($movie);
     }
 
     public function paginate(int $moviesPerView)
@@ -103,7 +93,7 @@ class MovieService implements MovieServiceInterface
                 $persons[$role] = [];
             }
 
-            $persons[$role][] = $this->personService->getPersonByFullName($fullName);
+            $persons[$role][] = $this->personRepository->getByFullName($fullName);;
         }
 
         return $persons;
@@ -113,9 +103,8 @@ class MovieService implements MovieServiceInterface
     private function processMovieFile(Movie $movie, EditMovieRequest $request): void
     {
         if ($request->hasFile('movie_file_path')) {
-            $this->storageService->delete(str_replace(self::STORAGE_PATH, '', $movie->movie_file_path));
-            $newMovieFilePath = $this->storageService->storeFilesForMovie($request, 'movie_file_path', $movie);
-            $movie->movie_file_path = $newMovieFilePath;
+            Storage::delete(str_replace(self::STORAGE_PATH, '', $movie->movie_file_path));
+            $movie->movie_file_path = self::STORAGE_PATH . $request->file('movie_file_path')->store(self::MOVIE_PATH . $movie->id);
             $this->movieRepository->save($movie);
         }
     }
@@ -123,9 +112,8 @@ class MovieService implements MovieServiceInterface
     private function processPosterFile(Movie $movie, EditMovieRequest $request): void
     {
         if ($request->hasFile('poster_file_path')) {
-            $this->storageService->delete(str_replace(self::STORAGE_PATH, '', $movie->poster_file_path));
-            $newPosterFilePath = $this->storageService->storeFilesForMovie($request, 'poster_file_path', $movie);
-            $movie->poster_file_path = $newPosterFilePath;
+            Storage::delete(str_replace(self::STORAGE_PATH, '', $movie->poster_file_path));
+            $movie->poster_file_path = self::STORAGE_PATH . $request->file('poster_file_path')->store(self::MOVIE_PATH . $movie->id);
             $this->movieRepository->save($movie);
         }
     }
@@ -186,37 +174,37 @@ class MovieService implements MovieServiceInterface
 
     public function filter(FilterMovieRequest $request): Collection
     {
-        $filterData = [
-            FilterType::minYear->value => $request->validated(FilterType::minYear->value),
-            FilterType::maxYear->value => $request->validated(FilterType::maxYear->value),
-            FilterType::genres->value => $request->validated(FilterType::genres->value),
-            FilterType::minRating->value => $request->validated(FilterType::minRating->value),
-            FilterType::maxRating->value => $request->validated(FilterType::maxRating->value),
-            FilterType::country->value => $request->validated(FilterType::country->value),
-            FilterType::productionStudio->value => $request->validated(FilterType::productionStudio->value),
-        ];
+        $filterData = array_filter([
+            'min_year' => $request->validated('min_year'),
+            'max_year' => $request->validated('max_year'),
+            'genres' => $request->validated('genres'),
+            'min_rating' => $request->validated('min_rating'),
+            'max_rating' => $request->validated('max_rating'),
+            'country' => $request->validated('country'),
+            'production_studio' => $request->validated('production_studio'),
+        ]);
 
         $filterQuery = Movie::query();
 
-        if ($filterData[FilterType::minYear->value] !== null && $filterData[FilterType::maxYear->value] !== null) {
-            $filterQuery->whereBetween('release_year', [$filterData[FilterType::minYear->value], $filterData[FilterType::maxYear->value]]);
+        if ($filterData['min_year'] !== null && $filterData['max_year'] !== null) {
+            $filterQuery->whereBetween('release_year', [$filterData['min_year'], $filterData['max_year']]);
         }
 
-        if ($filterData[FilterType::minRating->value] !== null && $filterData[FilterType::maxRating->value] !== null) {
-            $filterQuery->whereBetween('rating', [$filterData[FilterType::minRating->value], $filterData[FilterType::maxRating->value]]);
+        if ($filterData['min_rating'] !== null && $filterData['max_rating'] !== null) {
+            $filterQuery->whereBetween('rating', [$filterData['min_rating'], $filterData['max_rating']]);
         }
 
-        if ($filterData[FilterType::country->value] !== null) {
-            $filterQuery->where('country', $filterData[FilterType::country->value]);
+        if ($filterData['country'] !== null) {
+            $filterQuery->where('country', $filterData['country']);
         }
 
-        if ($filterData[FilterType::productionStudio->value] !== null) {
-            $filterQuery->where('production_studio', $filterData[FilterType::productionStudio->value]);
+        if ($filterData['production_studio'] !== null) {
+            $filterQuery->where('production_studio', $filterData['production_studio']);
         }
 
-        if (!empty($filterData[FilterType::genres->value])) {
+        if (!empty($filterData['genres'])) {
             $filterQuery->whereHas('genres', function ($query) use ($filterData) {
-                $query->whereIn('id', $filterData[FilterType::genres->value]);
+                $query->whereIn('id', $filterData['genres']);
             });
         }
 
@@ -226,5 +214,19 @@ class MovieService implements MovieServiceInterface
     public function getMovieFilePath(int $movieId): string
     {
         return $this->movieRepository->getById($movieId)->movie_file_path;
+    }
+
+    public function getUserRatingOnMovie(int $userId, int $movieId): int|null
+    {
+        if ($this->ratingRepository->getUserRatingOnMovie($userId, $movieId) !== null) {
+            return $this->ratingRepository->getUserRatingOnMovie($userId, $movieId)->user_rating;
+        }
+
+        return null;
+    }
+
+    public function getAllGenres()
+    {
+        return $this->genreRepository->all();
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AttachMovieToPersonRequest;
-use App\Http\Requests\Admin\EditPersonRequest;
+use App\Http\Requests\Dashboard\AttachMovieToPersonRequest;
+use App\Http\Requests\Dashboard\EditPersonRequest;
 use App\Http\Requests\Application\CreatePersonRequest;
 use App\Models\Person;
 use App\Services\Interfaces\MovieServiceInterface;
@@ -15,18 +15,11 @@ use Illuminate\View\View;
 class PersonController extends Controller
 {
 
-    private MovieServiceInterface $movieService;
     private PersonServiceInterface $personService;
 
-    public function __construct(MovieServiceInterface $movieService, PersonServiceInterface $personService)
+    public function __construct(PersonServiceInterface $personService)
     {
-        $this->movieService = $movieService;
         $this->personService = $personService;
-    }
-
-    public function showPersonCreateForm()
-    {
-        return view('person.add', ['movies' => $this->movieService->all()]);
     }
 
     public function showPersonPage(Person $person): View
@@ -40,29 +33,29 @@ class PersonController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(): View
     {
-        return view('admin.person.index', [
+        return view('dashboard.person.index', [
             'persons' => $this->personService->all()
         ]);
     }
 
-    public function create()
+    public function create(): View
     {
-        return view('admin.person.create');
+        return view('dashboard.person.create');
     }
 
     public function store(CreatePersonRequest $request): View
     {
         $this->personService->create($request);
-        return view('admin.person.index', [
-            'persons    ' => $this->personService->all()
+        return view('dashboard.person.index', [
+            'persons' => $this->personService->all()
         ]);
     }
 
     public function adminShow(Person $person): View
     {
-        return view('admin.person.show', [
+        return view('dashboard.person.show', [
             'person' => $person,
             'allRoles' => $this->personService->getPersonRoles($person),
             'movieRoles' => $this->personService->getMovieRoles($person),
@@ -70,36 +63,35 @@ class PersonController extends Controller
         ]);
     }
 
-    public function edit(Person $person)
+    public function edit(Person $person): View
     {
-        return view('admin.person.edit', ['person' => $person]);
+        return view('dashboard.person.edit', ['person' => $person]);
     }
 
-    public function update(EditPersonRequest $request, Person $person)
+    public function update(EditPersonRequest $request, Person $person): RedirectResponse
     {
-        $slug = $this->personService->edit($request, $person);
-        return redirect()->route('admin.person.edit', $slug);
+        return redirect()->route('dashboard.person.edit', $this->personService->edit($request, $person));
     }
 
-    public function delete(Person $person)
+    public function delete(Person $person): RedirectResponse
     {
         $this->personService->delete($person);
-        return redirect()->route('admin.person.index');
+        return redirect()->route('dashboard.person.index');
     }
 
-    public function showAttachForm()
+    public function showAttachForm(): View
     {
-        return view('admin.person.attach', [
-            'movies' => $this->movieService->all(),
+        return view('dashboard.person.attach', [
+            'movies' => $this->personService->getAllMovies(),
             'persons' => $this->personService->all(),
-            'role' => $this->personService->getAllPersonRoles()
+            'roles' => $this->personService->getAllPersonRoles()
         ]);
     }
 
-    public function attach(AttachMovieToPersonRequest $request)
+    public function attach(AttachMovieToPersonRequest $request): RedirectResponse
     {
         $person = $this->personService->attachPersonToMovie($request);
-        return redirect()->route('admin.person.show', [
+        return redirect()->route('dashboard.person.show', [
             'person' => $person,
             'allRoles' => $this->personService->getPersonRoles($person),
             'movieRoles' => $this->personService->getMovieRoles($person),
@@ -107,10 +99,10 @@ class PersonController extends Controller
         ]);
     }
 
-    public function detach(Person $person, $movieId, $roleId)
+    public function detach(Person $person, $movieId, $roleId): RedirectResponse
     {
         $this->personService->detachPersonRoleFromMovie($person, $movieId, $roleId);
-        return redirect()->route('admin.person.show', [
+        return redirect()->route('dashboard.person.show', [
             'person' => $person,
             'allRoles' => $this->personService->getPersonRoles($person),
             'movieRoles' => $this->personService->getMovieRoles($person),

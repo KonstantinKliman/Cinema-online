@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Admin\CreateRoleRequest;
-use App\Http\Requests\Admin\EditRoleRequest;
+use App\Http\Requests\Dashboard\CreateRoleRequest;
+use App\Http\Requests\Dashboard\EditRoleRequest;
 use App\Repositories\Interfaces\PermissionRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Services\Interfaces\RoleServiceInterface;

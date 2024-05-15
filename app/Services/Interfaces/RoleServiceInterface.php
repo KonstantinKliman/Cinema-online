@@ -2,8 +2,8 @@
 
 namespace App\Services\Interfaces;
 
-use App\Http\Requests\Admin\CreateRoleRequest;
-use App\Http\Requests\Admin\EditRoleRequest;
+use App\Http\Requests\Dashboard\CreateRoleRequest;
+use App\Http\Requests\Dashboard\EditRoleRequest;
 use Illuminate\Database\Eloquent\Collection;
 
 interface RoleServiceInterface

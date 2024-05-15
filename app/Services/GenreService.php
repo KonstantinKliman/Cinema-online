@@ -4,7 +4,7 @@
 namespace App\Services;
 
 
-use App\Http\Requests\Admin\EditGenreRequest;
+use App\Http\Requests\Dashboard\EditGenreRequest;
 use App\Http\Requests\Application\CreateGenreRequest;
 use App\Models\Genre;
 use App\Models\Movie;
@@ -25,9 +25,9 @@ class GenreService implements GenreServiceInterface
         $this->movieRepository = $movieRepository;
     }
 
-    public function createGenreForMovie(Movie $movie, array $genres)
+    public function createGenreForMovie(Movie $movie, array $genres): void
     {
-        return $this->movieRepository->attachGenres($movie, $genres);
+        $this->movieRepository->attachGenres($movie, $genres);
     }
 
     public function getMoviesByGenre(Genre $genre)

@@ -13,9 +13,12 @@ class ProfileRepository implements ProfileRepositoryInterface
         return Profile::where('user_id', $userId)->first();
     }
 
-    public function create(int $userId)
+    public function create(int $userId, string $firstName)
     {
-        return Profile::create(['user_id' => $userId, 'avatar' => 'assets/img/img-profile.png']);
+        return Profile::create([
+            'user_id' => $userId,
+            'avatar' => 'assets/img/img-profile.png',
+            'first_name' => $firstName]);
     }
 
     public function save(Profile $profile)
@@ -43,8 +46,8 @@ class ProfileRepository implements ProfileRepositoryInterface
         Profile::destroy($profileId);
     }
 
-    public function update(Profile $profile, array $data)
+    public function update(int $profileId, array $data)
     {
-        $profile->update($data);
+        Profile::query()->where('id', $profileId)->update($data);
     }
 }

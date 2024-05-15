@@ -3,17 +3,18 @@
 
 namespace App\Services\Interfaces;
 
-use App\Http\Requests\Admin\EditReviewRequest;
+use App\Http\Requests\Dashboard\EditReviewRequest;
 use App\Http\Requests\Application\CreateReviewRequest;
-use App\Http\Requests\Admin\CreateReviewRequest as CreateReviewAdminRequest;
+use App\Http\Requests\Dashboard\CreateReviewRequest as CreateReviewAdminRequest;
 use App\Models\Review;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 interface ReviewServiceInterface
 {
     public function createReview(CreateReviewRequest $request, int $movieId): array;
 
-    public function delete(int $reviewId): void;
+    public function deleteReview(int $reviewId): void;
 
     public function all(): Collection;
 
@@ -24,4 +25,8 @@ interface ReviewServiceInterface
     public function publish(int $reviewId);
 
     public function createReviewByAdmin(CreateReviewAdminRequest $request);
+
+    public function getUserReviews(Request $request);
+
+    public function getAllMovies(): Collection;
 }

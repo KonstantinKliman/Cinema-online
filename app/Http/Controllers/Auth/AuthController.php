@@ -21,49 +21,48 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function showLoginPage(): View
+    public function showLoginPage(): View //
     {
         return view('auth.login');
     }
 
-    public function showRegisterPage(): View
+    public function showRegisterPage(): View //
     {
         return view('auth.register');
     }
 
-    public function register(RegisterRequest $request): RedirectResponse
+    public function register(RegisterRequest $request): RedirectResponse //
     {
         $this->authService->register($request);
         return redirect()->route('index');
     }
 
-    public function login(LoginRequest $request): RedirectResponse
+    public function login(LoginRequest $request): RedirectResponse //
     {
-        $isRememberMe = (bool)$request->remember_me;
-        if ($this->authService->login($request->validated(), $isRememberMe)) {
+        if ($this->authService->login($request->validated(), (bool)$request->remember_me)) {
             return redirect()->route('index');
         }
         return redirect()->back()->withErrors(['auth_error' => 'Incorrect credentials']);
     }
 
-    public function logout(): RedirectResponse
+    public function logout(): RedirectResponse //
     {
         $this->authService->logout();
         return redirect()->route('index');
     }
 
-    public function verifyEmailPage(): View
+    public function verifyEmailPage(): View //
     {
         return view('auth.verify-email');
     }
 
-    public function verifyEmail(EmailVerificationRequest $request): RedirectResponse
+    public function verifyEmail(EmailVerificationRequest $request): RedirectResponse //
     {
         $this->authService->verifyEmail($request);
         return redirect()->route('index');
     }
 
-    public function resendVerificationLink(Request $request): RedirectResponse
+    public function resendVerificationLink(Request $request): RedirectResponse //
     {
         $this->authService->resendVerificationLink($request);
         return back()->with('message', 'Verification link sent!');

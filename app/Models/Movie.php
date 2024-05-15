@@ -25,16 +25,6 @@ class Movie extends Model
         'production_studio',
     ];
 
-    protected static function booted()
-    {
-        static::deleted(function ($movie) {
-            Storage::delete([
-                str_replace('storage/', '', $movie->movie_file_path),
-                str_replace('storage/', '', $movie->poster_file_path)
-            ]);
-        });
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -61,8 +51,40 @@ class Movie extends Model
                     ->withPivot('role_id');
     }
 
-    public function personRoles()
+    public function personRoles(): HasMany
     {
         return $this->hasMany(MoviePersonRole::class, 'movie_id');
     }
+
+    public function getPersons(): array
+    {
+        $personsByRole = [];
+
+        // Получаем все роли и их исполнителей для данного фильма
+        $roles = $this->personRoles()->with('role', 'person')->get();
+
+
+        foreach ($roles as $role) {
+            $roleName = $role->role->name;
+            $person = $role->person;
+
+            // Если роль уже существует в массиве, добавляем исполнителя в массив исполнителей этой роли
+            if (array_key_exists($roleName, $personsByRole)) {
+                // Проверяем, является ли исполнитель массивом
+                if (is_array($personsByRole[$roleName])) {
+                    // Добавляем исполнителя в массив исполнителей этой роли
+                    $personsByRole[$roleName][] = $person;
+                } else {
+                    // Преобразуем одиночного исполнителя в массив
+                    $personsByRole[$roleName] = [$personsByRole[$roleName], $person];
+                }
+            } else {
+                // Создаем новую запись для роли и исполнителя
+                $personsByRole[$roleName] = $person;
+            }
+        }
+
+        return $personsByRole;
+    }
+
 }

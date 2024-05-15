@@ -2,8 +2,8 @@
 
 namespace App\Services\Interfaces;
 
-use App\Http\Requests\Admin\CreatePersonRoleRequest;
-use App\Http\Requests\Admin\EditPersonRoleRequest;
+use App\Http\Requests\Dashboard\CreatePersonRoleRequest;
+use App\Http\Requests\Dashboard\EditPersonRoleRequest;
 use App\Models\PersonRole;
 use Illuminate\Database\Eloquent\Collection;
 

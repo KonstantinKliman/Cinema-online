@@ -9,20 +9,23 @@ use App\Http\Requests\Application\EditProfileRequest;
 use App\Http\Requests\Application\PhotoProfileRequest;
 use App\Models\Profile;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ProfileServiceInterface;
-use App\Services\Interfaces\StorageServiceInterface;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileService implements ProfileServiceInterface
 {
     private ProfileRepositoryInterface $profileRepository;
-    private StorageServiceInterface $storageService;
+    private UserRepositoryInterface $userRepository;
     private const AVATAR_PATH = 'profile/avatar';
     private const STORAGE_PATH = 'storage/';
+    private const PROFILE_PATH = 'profile/';
+    private const DEFAULT_AVATAR_PATH = 'assets/img/img-profile.png';
 
-    public function __construct(ProfileRepositoryInterface $profileRepository, StorageServiceInterface $storageService)
+    public function __construct(ProfileRepositoryInterface $profileRepository, UserRepositoryInterface $userRepository)
     {
         $this->profileRepository = $profileRepository;
-        $this->storageService = $storageService;
+        $this->userRepository = $userRepository;
     }
 
     public function getProfileInfo(int $userId): Profile
@@ -30,39 +33,35 @@ class ProfileService implements ProfileServiceInterface
         return $this->profileRepository->getByUserId($userId);
     }
 
-    public function editProfileInfo(EditProfileRequest $request, int $userId): Profile
+    public function editProfileInfo(EditProfileRequest $request, int $profileId): Profile
     {
-        $profile = $this->profileRepository->getByUserId($userId);
-        $data = $request->validated();
-        foreach ($data as $key => $value) {
-            $profile->$key = $value;
-        }
-        $this->profileRepository->save($profile);
-        return $profile;
+        $data = array_filter($request->validated());
+        $this->profileRepository->update($profileId, $data);
+        return $this->profileRepository->get($profileId);
     }
 
     public function editProfileAvatar(PhotoProfileRequest $request, int $userId): Profile
     {
         $profile = $this->profileRepository->getByUserId($userId);
         if ($request->file('avatar') !== null) {
-            $profile->update(['avatar' => $this->storageService->storeFileForProfile($request, 'avatar')]);
+            $profile->update(['avatar' => self::STORAGE_PATH . $request->file('avatar')->store(self::PROFILE_PATH . 'avatar')]);
         } else {
-            $this->storageService->delete(str_replace($this->storageService->getStoragePath(), '', $profile->avatar));
-            $profile->update(['avatar' => $this->storageService->getDefaultAvatarPath()]);
+            Storage::delete(str_replace(self::STORAGE_PATH, '', $profile->avatar));
+            $profile->update(['avatar' => self::DEFAULT_AVATAR_PATH]);
         }
         return $profile;
     }
 
     public function create(CreateProfileRequest $request)
     {
-        $userId = $request->validated('user_id');
-        $this->profileRepository->create($userId);
+        $user = $this->userRepository->getByUserId($request->validated('user_id'));
+        $this->profileRepository->create($request->validated('user_id'), $user->first_name);
     }
 
     public function setDefaultProfilePhoto(int $userId)
     {
         $profile = $this->getProfileInfo($userId);
-        $profile->update(['avatar' => $this->storageService->getDefaultAvatarPath()]);
+        $profile->update(['avatar' => self::DEFAULT_AVATAR_PATH]);
         return $profile;
     }
 
@@ -107,5 +106,10 @@ class ProfileService implements ProfileServiceInterface
 
         $this->profileRepository->save($profile);
 
+    }
+
+    public function getAllUsers()
+    {
+        return $this->userRepository->all();
     }
 }

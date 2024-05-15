@@ -95,3 +95,14 @@
 .full-stars .rating-group input:hover ~ label svg {
     fill: #ffffff;
 }
+
+.nav-item{
+    border-radius: 0.375rem;
+    background-color: transparent;
+    transition: background-color 0.3s ease-in-out;
+    margin-right: .5rem;
+}
+
+.nav-item:hover {
+    background-color: #2b3035;
+}

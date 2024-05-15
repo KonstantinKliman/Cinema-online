@@ -1,15 +1,16 @@
-@extends('layouts.main')
+@extends('layouts.dashboard')
 
 @section('title', 'Edit profile')
 
 @section('main')
-    <h1 class="text-center my-3">Edit your profile</h1>
+    <h1 class="text-center mb-3">Your profile</h1>
     <div class="d-flex flex-column align-items-center">
         {{--Edit profile information--}}
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
+        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-100">
             <h5 class="my-3 border-bottom pb-3">Edit your profile information</h5>
-            <form action="{{ route('edit-profile-info.action', ['user_id' => $profile->user->id]) }}" method="post">
+            <form action="{{ route('edit-profile-info.action', ['profileId' => $profile->id]) }}" method="post">
                 @csrf
+                @method('PATCH')
                 <div class="input-group mb-3">
                     <span class="input-group-text">First name</span>
                     <input type="text" class="form-control @error('first_name') is-invalid @enderror"
@@ -63,7 +64,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Information about yourself</span>
                     <textarea type="text" class="form-control @error('description') is-invalid @enderror"
-                              name="description" placeholder="Enter your information about yourself here">{{ old('description', $profile->description) }}</textarea>
+                              name="description" placeholder="Enter your information about yourself here" rows="10">{{ old('description', $profile->description) }}</textarea>
                     @error('description')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -82,8 +83,8 @@
             @endif
         </div>
         {{--Edit profile photo--}}
-        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-50">
-            <form action="{{ route('upload-profile-photo.action', ['user_id' => $profile->user->id]) }}" method="post"
+        <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-100">
+            <form action="" method="post"
                   enctype="multipart/form-data">
                 @csrf
                 <div class="border-bottom">

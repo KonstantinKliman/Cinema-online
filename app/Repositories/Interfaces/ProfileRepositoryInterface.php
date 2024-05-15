@@ -9,7 +9,7 @@ interface ProfileRepositoryInterface
 {
     public function getByUserId(int $userId);
 
-    public function create(int $userId);
+    public function create(int $userId, string $firstName);
 
     public function save(Profile $profile);
 
@@ -21,5 +21,5 @@ interface ProfileRepositoryInterface
 
     public function delete(int $profileId);
 
-    public function update(Profile $profile, array $data);
+    public function update(int $profileId, array $data);
 }

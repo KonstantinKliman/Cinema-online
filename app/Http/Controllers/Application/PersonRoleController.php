@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CreatePersonRoleRequest;
-use App\Http\Requests\Admin\EditPersonRoleRequest;
+use App\Http\Requests\Dashboard\CreatePersonRoleRequest;
+use App\Http\Requests\Dashboard\EditPersonRoleRequest;
 use App\Services\Interfaces\PersonRoleServiceInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PersonRoleController extends Controller
 {
@@ -17,31 +19,36 @@ class PersonRoleController extends Controller
         $this->personRoleService = $personRoleService;
     }
 
-    public function index()
+    public function index(): View
     {
-        return view('admin.person.role.index', ['roles' => $this->personRoleService->all()]);
+        return view('dashboard.person.role.index', ['roles' => $this->personRoleService->all()]);
     }
 
-    public function store(CreatePersonRoleRequest $request)
+    public function create(): View
+    {
+        return view('dashboard.person.role.create');
+    }
+
+    public function store(CreatePersonRoleRequest $request): RedirectResponse
     {
         $this->personRoleService->create($request);
-        return redirect()->route('admin.person.role.index', ['role' => $this->personRoleService->all()]);
+        return redirect()->route('dashboard.person.role.index', ['role' => $this->personRoleService->all()]);
     }
 
-    public function edit($roleId)
+    public function edit($roleId): View
     {
-        return view('admin.person.role.edit', ['role' => $this->personRoleService->get($roleId)]);
+        return view('dashboard.person.role.edit', ['role' => $this->personRoleService->get($roleId)]);
     }
 
-    public function update($roleId, EditPersonRoleRequest $request)
+    public function update($roleId, EditPersonRoleRequest $request): RedirectResponse
     {
         $this->personRoleService->edit($request,(int) $roleId);
-        return redirect()->route('admin.person.role.index', ['role' => $this->personRoleService->all()]);
+        return redirect()->route('dashboard.person.role.index', ['role' => $this->personRoleService->all()]);
     }
 
-    public function delete($roleId)
+    public function delete($roleId): RedirectResponse
     {
         $this->personRoleService->delete($roleId);
-        return redirect()->route('admin.person.role.index', ['role' => $this->personRoleService->all()]);
+        return redirect()->route('dashboard.person.role.index', ['role' => $this->personRoleService->all()]);
     }
 }

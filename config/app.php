@@ -169,7 +169,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\RepositoryProvider::class,
-        App\Providers\StorageServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
     ])->toArray(),
 

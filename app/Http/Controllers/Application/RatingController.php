@@ -8,6 +8,7 @@ use App\Models\Rating;
 use App\Services\Interfaces\RatingServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class RatingController extends Controller
 {
@@ -29,6 +30,11 @@ class RatingController extends Controller
     {
         $this->ratingService->deleteRating($request->user()->id, $movieId);
         return redirect()->back();
+    }
+
+    public function index(Request $request): View
+    {
+        return view('rating.index', ['ratings' => $this->ratingService->getRatingsForUser($request)]);
     }
 
 }

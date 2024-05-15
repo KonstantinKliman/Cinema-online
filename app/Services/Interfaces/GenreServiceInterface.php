@@ -4,7 +4,7 @@
 namespace App\Services\Interfaces;
 
 
-use App\Http\Requests\Admin\EditGenreRequest;
+use App\Http\Requests\Dashboard\EditGenreRequest;
 use App\Http\Requests\Application\CreateGenreRequest;
 use App\Models\Genre;
 use App\Models\Movie;

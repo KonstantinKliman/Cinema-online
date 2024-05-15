@@ -19,8 +19,6 @@ interface MovieServiceInterface
 
     public function searchMovie(string $query): Collection;
 
-    public function updateMovieRating(int $movieId): void;
-
     public function paginate(int $moviesPerView);
 
     public function all();
@@ -38,4 +36,8 @@ interface MovieServiceInterface
     public function getFilterData();
 
     public function getMovieFilePath(int $movieId): string;
+
+    public function getUserRatingOnMovie(int $userId, int $movieId): int|null;
+
+    public function getAllGenres();
 }

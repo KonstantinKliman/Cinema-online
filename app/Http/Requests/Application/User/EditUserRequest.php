@@ -11,9 +11,9 @@ class EditUserRequest extends FormRequest
     {
         $userId = $this->route('user_id');
         return [
-            'name' => ['required', 'string', 'max:255', 'min:3', Rule::unique('users', 'name')->ignore($userId)],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
-            'role' => ['required', 'integer', Rule::exists('roles', 'id')]
+            'name' => ['string', 'max:255', 'min:3', Rule::unique('users', 'name')->ignore($userId)],
+            'email' => ['email', Rule::unique('users', 'email')->ignore($userId)],
+            'role' => ['integer', Rule::exists('roles', 'id')]
         ];
     }
 }

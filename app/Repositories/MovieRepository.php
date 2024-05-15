@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Models\Movie;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection as SupportCollection;
 
 class MovieRepository implements MovieRepositoryInterface
@@ -18,7 +19,7 @@ class MovieRepository implements MovieRepositoryInterface
 
     public function getById(int $id)
     {
-        return Movie::find($id);
+        return Movie::query()->where('id', $id)->get();
     }
 
     public function getCollectionByQuery(string $query)
@@ -31,17 +32,17 @@ class MovieRepository implements MovieRepositoryInterface
         return Movie::create($data);
     }
 
-    public function save(Movie $movie)
+    public function save(Movie $movie): bool
     {
         return $movie->save();
     }
 
-    public function paginate(int $moviesPerView)
+    public function paginate(int $moviesPerView): LengthAwarePaginator
     {
-        return Movie::where('is_published', '1')->paginate($moviesPerView);
+        return Movie::query()->where('is_published', '1')->paginate($moviesPerView);
     }
 
-    public function all()
+    public function all(): Collection
     {
         return Movie::all();
     }

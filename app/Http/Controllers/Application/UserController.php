@@ -3,82 +3,76 @@
 namespace App\Http\Controllers\Application;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Application\User\CreateRequest;
+use App\Http\Requests\Application\User\CreateUserRequest;
 use App\Http\Requests\Application\User\EditUserPasswordRequest;
 use App\Http\Requests\Application\User\EditUserRequest;
-use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
     private UserServiceInterface $userService;
 
-    private RoleServiceInterface $roleService;
-
-    public function __construct(UserServiceInterface $userService, RoleServiceInterface $roleService)
+    public function __construct(UserServiceInterface $userService)
     {
         $this->userService = $userService;
-        $this->roleService = $roleService;
     }
 
-    public function adminUserIndex(): View
+    public function adminUserIndex(): View //
     {
-        return view('admin.user.index', [
+        return view('dashboard.user.index', [
             'users' => $this->userService->getAllUsers(),
         ]);
     }
 
-    public function adminUserShow($userId): View
+    public function adminUserShow($userId): View //
     {
-        return view('admin.user.show', [
+        return view('dashboard.user.show', [
             'user' => $this->userService->getUser($userId),
         ]);
     }
 
-    public function adminUserEdit($userId): View
+    public function adminUserEdit($userId): View //
     {
-        return view('admin.user.edit', [
+        return view('dashboard.user.edit', [
             'user' => $this->userService->getUser($userId),
-            'roles' => $this->roleService->all()
+            'roles' => $this->userService->getAllRoles()
         ]);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View //
     {
         return view('user.main', ['user' => $request->user()]);
     }
 
-    public function update(EditUserRequest $request, $userId): RedirectResponse
+    public function update(EditUserRequest $request, $userId): RedirectResponse //
     {
-//        dd($request->validated());
         $this->userService->update($request, $userId);
         return redirect()->back();
     }
 
-    public function editUserPassword(EditUserPasswordRequest $request, $userId): RedirectResponse
+    public function editUserPassword(EditUserPasswordRequest $request, $userId): RedirectResponse //
     {
         $message = $this->userService->editUserPassword($request, $userId);
         return redirect()->back()->with($message);
     }
 
-    public function destroy($userId): RedirectResponse
+    public function delete(Request $request, $userId): RedirectResponse //
     {
-        $this->userService->destroy($userId);
-        return redirect()->route('admin.user.index');
+        $this->userService->destroy($request, $userId);
+        return redirect()->route('dashboard.user.index');
     }
 
-    public function create(): View
+    public function create(): View //
     {
-        return view('admin.user.create');
+        return view('dashboard.user.create');
     }
 
-    public function store(CreateRequest $request): RedirectResponse
+    public function store(CreateUserRequest $request): RedirectResponse //
     {
         $user = $this->userService->store($request);
-        return redirect()->route('admin.user.show', ['user_id' => $user->id]);
+        return redirect()->route('dashboard.user.show', ['user_id' => $user->id]);
     }
 }

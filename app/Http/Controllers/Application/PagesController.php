@@ -9,7 +9,6 @@ use Illuminate\View\View;
 
 class PagesController extends Controller
 {
-
     private MovieServiceInterface $movieService;
     private GenreServiceInterface $genreService;
 
@@ -22,14 +21,14 @@ class PagesController extends Controller
     public function index(): View
     {
         return view('index', [
-            'movies' => $this->movieService->paginate(10),
+            'movies' => $this->movieService->paginate(12),
             'genres' => $this->genreService->getAllGenres(),
             'filterData' => $this->movieService->getFilterData()
         ]);
     }
 
-    public function adminIndex(): View
+    public function dashboardIndex(): View
     {
-        return view('admin.index');
+        return view('dashboard.index');
     }
 }

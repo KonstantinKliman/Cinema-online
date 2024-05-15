@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum ReviewType: int
 {
-    case positive = 0;
-    case neutral = 1;
-    case negative = 2;
+    case positive = 1;
+    case neutral = 2;
+    case negative = 3;
 }

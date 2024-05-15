@@ -21,7 +21,7 @@ interface MovieRepositoryInterface
 
     public function paginate(int $moviesPerView);
 
-    public function all();
+    public function all(): Collection;
 
     public function syncGenres(Movie $movie, array $genres): void;
 

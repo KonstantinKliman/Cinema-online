@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Enums\RoleType;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use Spatie\Permission\Models\Role;
 
 class UserRepository implements UserRepositoryInterface
 
@@ -50,9 +51,9 @@ class UserRepository implements UserRepositoryInterface
         return User::getRoles();
     }
 
-    public function editUserRole(int $userId, string $role): bool
+    public function editUserRole(User $user, string $role): void
     {
-        return User::where(['id' => $userId])->update(['role' => $role]);
+        $user->assignRole($role);
     }
 
     public function update(User $user, array $data)

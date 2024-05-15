@@ -13,7 +13,7 @@ interface ProfileServiceInterface
 {
     public function getProfileInfo(int $userId): Profile;
 
-    public function editProfileInfo(EditProfileRequest $request, int $userId): Profile;
+    public function editProfileInfo(EditProfileRequest $request, int $profileId): Profile;
 
     public function editProfileAvatar(PhotoProfileRequest $request, int $userId): Profile;
 
@@ -30,4 +30,6 @@ interface ProfileServiceInterface
     public function delete(int $profileId);
 
     public function update(EditProfileRequest $request, int $profileId);
+
+    public function getAllUsers();
 }

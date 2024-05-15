@@ -4,10 +4,10 @@
 namespace App\Services\Interfaces;
 
 
-use App\Http\Requests\Admin\AttachMovieToPersonRequest;
-use App\Http\Requests\Admin\CreatePersonRoleRequest;
-use App\Http\Requests\Admin\EditPersonRequest;
-use App\Http\Requests\Admin\EditPersonRoleRequest;
+use App\Http\Requests\Dashboard\AttachMovieToPersonRequest;
+use App\Http\Requests\Dashboard\CreatePersonRoleRequest;
+use App\Http\Requests\Dashboard\EditPersonRequest;
+use App\Http\Requests\Dashboard\EditPersonRoleRequest;
 use App\Http\Requests\Application\CreatePersonRequest;
 use App\Models\Person;
 use App\Models\PersonRole;
@@ -29,7 +29,7 @@ interface PersonServiceInterface
 
     public function edit(EditPersonRequest $request, Person $person): string;
 
-    public function createPersonRole(CreatePersonRoleRequest $request): void;
+    public function createPersonRole(CreatePersonRoleRequest $request);
 
     public function getAllPersonRoles(): Collection;
 
@@ -44,4 +44,6 @@ interface PersonServiceInterface
     public function detachPersonRoleFromMovie(Person $person, int $movieId, int $roleId);
 
     public function delete(Person $person): void;
+
+    public function getAllMovies();
 }

@@ -3,22 +3,27 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Admin\CreateReviewRequest as CreateReviewAdminRequest;
-use App\Http\Requests\Admin\EditReviewRequest;
+use App\Http\Requests\Dashboard\CreateReviewRequest as CreateReviewAdminRequest;
+use App\Http\Requests\Dashboard\EditReviewRequest;
 use App\Http\Requests\Application\CreateReviewRequest;
 use App\Models\Review;
+use App\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Repositories\Interfaces\ReviewRepositoryInterface;
 use App\Services\Interfaces\ReviewServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class ReviewService implements ReviewServiceInterface
 {
 
     private ReviewRepositoryInterface $reviewRepository;
 
-    public function __construct(ReviewRepositoryInterface $reviewRepository)
+    private MovieRepositoryInterface $movieRepository;
+
+    public function __construct(ReviewRepositoryInterface $reviewRepository, MovieRepositoryInterface $movieRepository)
     {
         $this->reviewRepository = $reviewRepository;
+        $this->movieRepository = $movieRepository;
     }
 
     public function createReview(CreateReviewRequest $request, int $movieId): array
@@ -37,7 +42,7 @@ class ReviewService implements ReviewServiceInterface
         return ['create_review_success' => 'Review posted.'];
     }
 
-    public function delete(int $reviewId): void
+    public function deleteReview(int $reviewId): void
     {
         $this->reviewRepository->delete($reviewId);
     }
@@ -78,9 +83,19 @@ class ReviewService implements ReviewServiceInterface
             'user_id' => $request->user()->id,
             'title' => $request->validated('title'),
             'review' => $request->validated('review'),
-            'type' => $request->validated('type'),
+            'type_id' => $request->validated('type_id'),
             'is_published' => $request->validated('is_published'),
         ];
         $this->reviewRepository->create($data);
+    }
+
+    public function getUserReviews(Request $request)
+    {
+        return Review::query()->where('user_id', $request->user()->id)->get();
+    }
+
+    public function getAllMovies(): Collection
+    {
+        return $this->movieRepository->all();
     }
 }

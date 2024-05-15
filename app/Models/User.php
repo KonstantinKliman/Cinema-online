@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -66,5 +67,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function getRoleName(): string
+    {
+        return $this->roles()->first()->name;
     }
 }
