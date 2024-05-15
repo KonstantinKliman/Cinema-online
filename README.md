@@ -41,5 +41,5 @@
 
 8. Запустите локальный сервер:
     ```bash
-    php artisan serve --seed
+    php artisan serve
     ```
