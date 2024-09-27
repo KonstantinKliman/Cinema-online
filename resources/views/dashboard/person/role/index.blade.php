@@ -5,7 +5,7 @@
 @section('main')
     <div class="row">
         <div class="col d-flex align-items-center flex-column">
-            <h1 class="mb-3">Role for persons</h1>
+            <h3 class="mb-3">Role for persons</h3>
         </div>
     </div>
     <div class="row d-flex justify-content-center">

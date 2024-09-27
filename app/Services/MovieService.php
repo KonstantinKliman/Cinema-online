@@ -12,6 +12,7 @@ use App\Repositories\Interfaces\GenreRepositoryInterface;
 use App\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Repositories\Interfaces\PersonRepositoryInterface;
 use App\Repositories\Interfaces\RatingRepositoryInterface;
+use App\Services\Interfaces\MovieServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -31,7 +32,7 @@ class MovieService implements MovieServiceInterface
         $this->movieRepository = $movieRepository;
         $this->ratingRepository = $ratingRepository;
         $this->personRepository = $personRepository;
-        $this->genreRepository= $genreRepository;
+        $this->genreRepository = $genreRepository;
     }
 
     public function createMovie(CreateMovieRequest $request): array

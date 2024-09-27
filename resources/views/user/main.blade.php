@@ -3,7 +3,7 @@
 @section('title', 'Your user account')
 
 @section('main')
-    <h1 class="text-center mb-3">Your account</h1>
+    <h3 class="text-center mb-3">Your account</h3>
     @if(!auth()->user()->hasVerifiedEmail())
         <p class="text-center form-text">
             To access your profile, you need to verify your email. If you did not receive an email, please click
@@ -20,7 +20,7 @@
         {{--Edit user information--}}
         <div class="border bg-light-subtle rounded-3 px-3 mb-5 w-100">
             <h5 class="my-3 border-bottom pb-3">Edit your account information</h5>
-            <form action="{{ route('user.update', ['user_id' => $user->id]) }}" method="post">
+            <form action="{{ route('dashboard.user.update', ['user_id' => $user->id]) }}" method="post">
                 @csrf
                 @method("PUT")
                 <div class="row d-flex flex-column">
