@@ -14,13 +14,12 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', [
-                RoleType::administrator->value,
-                RoleType::uploader->value,
-                RoleType::moderator->value,
-                RoleType::subscriber->value,
-                RoleType::verified->value,
-                RoleType::user->value
-            ])->default(RoleType::user);
+                RoleType::Administrator->value,
+                RoleType::Uploader->value,
+                RoleType::Moderator->value,
+                RoleType::Verified->value,
+                RoleType::User->value
+            ])->default(RoleType::User);
         });
     }
 
